@@ -1,0 +1,49 @@
+{
+  "summary": "This paper proposes an improved method for ranking influential nodes in complex networks using a multiattribute k-shell method enhanced by information entropy weighting. The method integrates the k-shell decomposition with additional attributes like node position and neighborhood properties to refine the influence assessment of nodes. This approach is validated through experimental simulations on real networks using the SIR model and other evaluation measures.",
+  "formulas": [
+    "km_i = kr_i + \\lambda ke_i",
+    "\\theta(i) = ks_max - ks_i + 1 \\sum_{j \\in S} c_{d_{ij}}",
+    "\\delta_i = ks_i * (1 + \\frac{iter(i)}{m})",
+    "IC_i = \\delta_i * d_i + \\sum_{j \\in \\Gamma(i)} \\delta_j * d_j",
+    "C_nc(i) = \\sum_{j \\in \\Gamma(i)} ks(j)",
+    "C_nc^+(i) = \\sum_{j \\in \\Gamma(i)} C_nc(j)",
+    "p(i) = \\frac{1}{1 + e^{-\\sqrt{iter(i)}}}",
+    "PN_p(i) = ks_i + \\sum_{j \\in \\Gamma(i)} p(j)",
+    "PN_n(i) = \\sum_{j \\in \\Gamma(i)} \\sum_{l \\in \\Gamma(j)} k_l",
+    "PN(i) = w_1 * PN_p(i) + w_2 * PN_n(i)",
+    "H_i = -\\frac{1}{\\ln n} \\sum_{j=1}^n r_{ij} \\ln r_{ij}",
+    "r_{1j} = \\frac{PN_p(j)}{\\sum_{j=1}^n PN_p(j)}, r_{2j} = \\frac{PN_n(j)}{\\sum_{j=1}^n PN_n(j)}",
+    "w_i = \\frac{1 - H_i}{2 - \\sum_i H_i}"
+  ],
+  "relationships": [
+    "The k-shell decomposition is refined by incorporating node position and neighborhood properties to better distinguish influential nodes.",
+    "Node influence is determined by both its position in the network and the properties of its neighbors, integrating local and global information.",
+    "The weighting of node attributes is adjusted by information entropy to balance the influence of position and neighbor attributes."
+  ],
+  "variables": [
+    "km_i: Mixed degree of node i",
+    "kr_i: Residual degree of node i",
+    "ke_i: Depletion degree of node i",
+    "\\lambda: Adjustable parameter between 0 and 1",
+    "ks_i: k-shell value of node i",
+    "ks_max: Maximum k-shell value in the network",
+    "S: Set of core nodes in the network",
+    "c_{d_{ij}}: Shortest path distance between nodes i and j",
+    "iter(i): Number of iterations node i is involved in during decomposition",
+    "m: Total number of iterations in k-shell decomposition",
+    "d_i: Degree of node i",
+    "\\Gamma(i): Set of neighbors of node i",
+    "p(i): Position index of node i",
+    "PN_p(i): Position attribute of node i",
+    "PN_n(i): Neighbor attribute of node i",
+    "w_1, w_2: Weights for position and neighbor attributes",
+    "H_i: Entropy of attribute i",
+    "r_{ij}: Normalized value of attribute i for node j",
+    "n: Total number of nodes"
+  ],
+  "key_ideas": [
+    "Introduction of an improved multiattribute k-shell method that uses iterative information and sigmod function for better node influence ranking.",
+    "Integration of position and neighbor attributes weighted by information entropy to enhance the differentiation of node influence.",
+    "Validation of the proposed method through extensive simulations on real networks, demonstrating its effectiveness in distinguishing influential nodes."
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "simulation_equations": [
+    "DG(T, den) = DH - T * DS + DCp * ((T - T0) - T * ln(T / T0)) - m * den",
+    "ln(rate) = ln(D0) + DEa / (R * T) - (m_TS / m) * DG(T, den) / (R * T)",
+    "den_constant_stability = (DH - T * DS + DCp * ((T - T0) - T * ln(T / T0)) - DG_target) / m",
+    "ln(rate_constant_stability) = ln(D0) + DEa / (R * T) - (m_TS / m) * DG_target / (R * T)",
+    "Arrhenius_slope = DEa / R + (m_TS / m) * DG_target / R"
+  ],
+  "constants_required": [
+    {
+      "name": "R",
+      "description": "Universal gas constant",
+      "value_or_range": "8.314 J/(mol*K) or 0.001987 kcal/(mol*K)"
+    },
+    {
+      "name": "T0",
+      "description": "Reference temperature for thermodynamic calculations",
+      "value_or_range": "298.15 K (25\u00b0C)"
+    },
+    {
+      "name": "DH",
+      "description": "Enthalpy change of folding at reference temperature",
+      "value_or_range": "Typical range: -20 to -60 kcal/mol for small proteins"
+    },
+    {
+      "name": "DS",
+      "description": "Entropy change of folding at reference temperature",
+      "value_or_range": "Typical range: -0.05 to -0.20 kcal/(mol*K)"
+    },
+    {
+      "name": "DCp",
+      "description": "Heat capacity change of folding",
+      "value_or_range": "Typical range: -0.5 to -2.0 kcal/(mol*K) for small proteins"
+    },
+    {
+      "name": "m",
+      "description": "m-value for denaturant dependence of stability",
+      "value_or_range": "Typical range: 1.0 to 3.0 kcal/(mol*M) for urea or GdmCl"
+    },
+    {
+      "name": "m_TS",
+      "description": "m-value for the transition state",
+      "value_or_range": "Typically 0.5 to 0.8 times m (fractional value)"
+    },
+    {
+      "name": "D0",
+      "description": "Pre-exponential factor for configurational diffusion constant",
+      "value_or_range": "Typical range: 10^5 to 10^7 s^-1"
+    },
+    {
+      "name": "DEa",
+      "description": "Activation energy for configurational diffusion",
+      "value_or_range": "Typical range: 2 to 10 kcal/mol"
+    },
+    {
+      "name": "DG_target",
+      "description": "Target free energy of folding to maintain constant stability",
+      "value_or_range": "Typical range: -3 to -8 kcal/mol for stable proteins"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "T",
+      "description": "Temperature at which folding rate is measured",
+      "range": "[278.15, 323.15]",
+      "units": "K (5\u00b0C to 50\u00b0C)"
+    },
+    {
+      "name": "den",
+      "description": "Denaturant concentration adjusted to maintain constant stability",
+      "range": "Computed dynamically to maintain DG(T, den) = DG_target",
+      "units": "M (molar)"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Initialize all thermodynamic constants (R, T0, DH, DS, DCp, m, m_TS, D0, DEa, DG_target) with values from typical protein folding experiments or paper-specific values if available",
+    "Step 2: Create a temperature array T ranging from 278.15 K to 323.15 K with 20-30 evenly spaced points",
+    "Step 3: For each temperature T in the array, calculate the required denaturant concentration den that maintains constant stability using: den = (DH - T * DS + DCp * ((T - T0) - T * ln(T / T0)) - DG_target) / m",
+    "Step 4: For each temperature T, compute the free energy at constant stability: DG(T, den) = DG_target (by construction)",
+    "Step 5: Calculate the natural logarithm of the folding rate at each temperature using: ln(rate) = ln(D0) + DEa / (R * T) - (m_TS / m) * DG_target / (R * T)",
+    "Step 6: Compute 1/T for each temperature to create the x-axis for Arrhenius plot",
+    "Step 7: Perform linear regression on ln(rate) vs 1/T to extract the slope and intercept",
+    "Step 8: Calculate the effective activation energy from the slope: E_eff = -slope * R",
+    "Step 9: Compare the extracted activation energy with the theoretical prediction: E_theory = DEa + (m_TS / m) * DG_target",
+    "Step 10: Generate visualizations: (a) ln(rate) vs 1/T (Arrhenius plot) with linear fit, (b) denaturant concentration vs temperature showing the constant stability contour, (c) folding rate vs temperature on linear scale",
+    "Step 11: Perform sensitivity analysis by varying DG_target (e.g., -3, -5, -7 kcal/mol) and plotting multiple Arrhenius lines to show how stability affects the slope",
+    "Step 12: Optionally, compare with non-constant stability case by computing rates at fixed denaturant concentration to demonstrate non-Arrhenius behavior"
+  ],
+  "expected_outcomes": "The simulation should reveal: (1) A linear relationship between ln(rate) and 1/T when protein stability is maintained constant through denaturant adjustment, confirming Arrhenius behavior. (2) The slope of the Arrhenius plot should yield an effective activation energy equal to DEa + (m_TS/m)*DG_target, demonstrating that the observed activation energy includes contributions from both configurational diffusion (DEa) and the stability-dependent barrier. (3) The denaturant concentration required to maintain constant stability should increase with temperature, reflecting the temperature dependence of protein stability. (4) Different constant stability contours (different DG_target values) should produce parallel Arrhenius lines with the same slope (same DEa) but different intercepts. (5) Comparison with fixed denaturant concentration should show curved (non-Arrhenius) behavior, highlighting the importance of stability correction. (6) The linearity of the Arrhenius plot validates the hypothesis that configurational diffusion has an Arrhenius temperature dependence and that protein folding kinetics exhibit Arrhenius behavior when corrected for stability effects."
+}

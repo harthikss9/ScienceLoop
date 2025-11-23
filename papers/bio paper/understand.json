@@ -1,0 +1,37 @@
+{
+  "summary": "This paper investigates the temperature dependence of protein folding kinetics, particularly focusing on the Arrhenius behavior when corrected for the temperature dependence of protein stability. It explores two main explanations for the non-Arrhenius behavior observed in protein folding kinetics: the super Arrhenius temperature dependence due to a rough energy landscape and the unusual temperature dependence of the hydrophobic interaction.",
+  "formulas": [
+    "k(T, den) = DF * exp(-1 / RT * (DHU-TS - T * DSU-TS + DCp:U-TS * (T^2 - T0^2) * ln(T / T0) - mU-TS * den))",
+    "DG(T, den) = DG(T) - m * den = DH - T * DS + DCp * (T^2 - T0^2) * ln(T / T0) - m * den",
+    "rate = D * exp(-DG_TS / RT)",
+    "ln(rate) = ln(D0) + DEa / RT - DG_TS / RT",
+    "ln(rate) = ln(D0) + DEa / RT - m_TS / m * DG(T, den) / RT - (DG_TS(T) - m_TS / m * DG(T)) / RT",
+    "DG_TS(T) - m_TS / m * DG(T) = DH_TS - m_TS / m * DH - (DS_TS - m_TS / m * DS) * T + (DCp_TS - m_TS / m * DCp) * (T^2 - T0^2) * ln(T / T0)"
+  ],
+  "relationships": [
+    "The logarithm of the folding rate is a linear function of 1/T on constant stability contours in the temperature-denaturant plane.",
+    "The temperature dependence of the folding rate is strongly non-Arrhenius due to the quadratic argument of the exponential in the rate transition formula.",
+    "The non-Arrhenius behavior of protein folding kinetics is influenced by the temperature dependence of the hydrophobic interaction.",
+    "The stability of protein L under different conditions affects the rate of folding, which can be modeled by adjusting the denaturant concentration to maintain constant stability."
+  ],
+  "variables": [
+    "k: rate constant for folding/unfolding reaction",
+    "T: temperature",
+    "den: denaturant concentration",
+    "DF: pre-exponential factor in the Arrhenius equation",
+    "R: universal gas constant",
+    "DHU-TS, DSU-TS, DCp:U-TS, mU-TS: parameters for the unfolding reaction",
+    "DG: free energy change of folding",
+    "DH, DS, DCp, m: thermodynamic parameters at standard state",
+    "D: configurational diffusion constant",
+    "DG_TS: free energy change at the transition state",
+    "DEa: activation energy for configurational diffusion",
+    "m_TS: m-value for the transition state"
+  ],
+  "key_ideas": [
+    "Protein folding kinetics can exhibit Arrhenius behavior when corrected for the temperature dependence of protein stability.",
+    "The non-Arrhenius temperature dependence of protein folding can be explained by either the configurational diffusion on a rough energy landscape or the temperature dependence of hydrophobic interactions.",
+    "The stability-corrected Arrhenius plots provide insights into the fundamental aspects of protein folding, suggesting that the configurational diffusion constant has an Arrhenius temperature dependence.",
+    "Experimental and theoretical approaches are used to deconvolute the intrinsic temperature dependence of folding from the temperature dependence of protein stability."
+  ]
+}

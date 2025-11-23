@@ -1,0 +1,98 @@
+{
+  "simulation_equations": [
+    "ks_i = k_shell_decomposition(network)",
+    "iter(i) = iteration_count_during_decomposition(network, i)",
+    "p(i) = 1 / (1 + exp(-sqrt(iter(i))))",
+    "PN_p(i) = ks_i + sum(p(j) for j in neighbors(i))",
+    "PN_n(i) = sum(sum(k_l for l in neighbors(j)) for j in neighbors(i))",
+    "r_1j = PN_p(j) / sum(PN_p(j) for all j)",
+    "r_2j = PN_n(j) / sum(PN_n(j) for all j)",
+    "H_1 = -(1/ln(n)) * sum(r_1j * ln(r_1j) for all j)",
+    "H_2 = -(1/ln(n)) * sum(r_2j * ln(r_2j) for all j)",
+    "w_1 = (1 - H_1) / (2 - (H_1 + H_2))",
+    "w_2 = (1 - H_2) / (2 - (H_1 + H_2))",
+    "PN(i) = w_1 * PN_p(i) + w_2 * PN_n(i)",
+    "w_1_adaptive = f(degree_heterogeneity, clustering_variance, H_1, H_2)",
+    "w_2_adaptive = 1 - w_1_adaptive",
+    "PN_adaptive(i) = w_1_adaptive * PN_p(i) + w_2_adaptive * PN_n(i)",
+    "SIR_spread = simulate_SIR(network, initial_node, beta, gamma, steps)",
+    "tau = kendall_tau(ranking, SIR_final_infected)",
+    "M = monotonicity(ranking, SIR_spreading_curve)"
+  ],
+  "constants_required": [
+    {
+      "name": "beta",
+      "description": "SIR infection rate",
+      "value_or_range": "0.08 to 0.15 (typical range from paper)"
+    },
+    {
+      "name": "gamma",
+      "description": "SIR recovery rate",
+      "value_or_range": "0.1 (fixed as per paper)"
+    },
+    {
+      "name": "SIR_steps",
+      "description": "Number of time steps for SIR simulation",
+      "value_or_range": "100 to 200"
+    },
+    {
+      "name": "n",
+      "description": "Total number of nodes in network",
+      "value_or_range": "Network-dependent (from real network datasets)"
+    },
+    {
+      "name": "m",
+      "description": "Total iterations in k-shell decomposition",
+      "value_or_range": "Computed during k-shell decomposition"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "network_dataset",
+      "description": "Real network topology to test",
+      "range": "[Karate, Dolphins, Jazz, Email, Power Grid, Internet, Collaboration networks]",
+      "units": "categorical"
+    },
+    {
+      "name": "weighting_scheme",
+      "description": "Method for computing w_1 and w_2",
+      "range": "[fixed_entropy, adaptive_degree_heterogeneity, adaptive_clustering, adaptive_combined]",
+      "units": "categorical"
+    },
+    {
+      "name": "alpha_degree",
+      "description": "Sensitivity parameter for degree heterogeneity in adaptive weighting",
+      "range": "[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]",
+      "units": "dimensionless"
+    },
+    {
+      "name": "alpha_clustering",
+      "description": "Sensitivity parameter for clustering variance in adaptive weighting",
+      "range": "[0.0, 0.2, 0.4, 0.6, 0.8, 1.0]",
+      "units": "dimensionless"
+    },
+    {
+      "name": "beta_SIR",
+      "description": "SIR infection rate for validation",
+      "range": "[0.08, 0.10, 0.12, 0.15]",
+      "units": "probability per contact"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Load real network datasets (Karate, Dolphins, Jazz, Email, Power Grid, etc.) and compute basic topological properties (degree distribution, clustering coefficients, k-shell values)",
+    "Step 2: For each network, perform k-shell decomposition and record iter(i) for each node during the decomposition process",
+    "Step 3: Compute position attribute PN_p(i) using ks_i and position index p(i) = 1/(1 + exp(-sqrt(iter(i))))",
+    "Step 4: Compute neighbor attribute PN_n(i) as the sum of degrees of second-order neighbors",
+    "Step 5: Calculate fixed entropy weights: normalize PN_p and PN_n to get r_1j and r_2j, compute H_1 and H_2, then w_1 = (1-H_1)/(2-(H_1+H_2)) and w_2 = (1-H_2)/(2-(H_1+H_2))",
+    "Step 6: Compute network topology metrics: degree_heterogeneity = std(degrees)/mean(degrees), clustering_variance = var(clustering_coefficients)",
+    "Step 7: Implement adaptive weighting schemes: w_1_adaptive = (1-H_1)/(2-(H_1+H_2)) * (1 + alpha_degree * degree_heterogeneity + alpha_clustering * clustering_variance), normalize so w_1_adaptive + w_2_adaptive = 1",
+    "Step 8: For each weighting scheme (fixed and adaptive variants), compute node rankings: PN(i) = w_1 * PN_p(i) + w_2 * PN_n(i)",
+    "Step 9: Run SIR simulations for each node as initial spreader with varying beta values (0.08, 0.10, 0.12, 0.15) and fixed gamma = 0.1, record final infected count F(i) for each node",
+    "Step 10: Compute Kendall's tau correlation between each ranking method and SIR spreading results: tau = kendall_tau(PN_ranking, F_ranking)",
+    "Step 11: Compute monotonicity metric M by checking if higher-ranked nodes consistently produce larger spreading cascades",
+    "Step 12: For each network and beta value, compare performance: tau_fixed vs tau_adaptive for different alpha combinations",
+    "Step 13: Generate visualizations: (a) heatmaps of tau values across networks and weighting schemes, (b) scatter plots of node rankings (fixed vs adaptive) colored by SIR spreading, (c) bar charts comparing tau and monotonicity across methods, (d) line plots showing tau vs alpha_degree and alpha_clustering parameters",
+    "Step 14: Statistical analysis: perform paired t-tests or Wilcoxon signed-rank tests to determine if adaptive weighting significantly improves correlation with SIR dynamics across networks"
+  ],
+  "expected_outcomes": "The simulation should reveal that adaptive entropy weighting based on network topology (degree heterogeneity and clustering variance) produces higher Kendall's tau correlations with SIR spreading dynamics compared to fixed entropy weights, particularly in networks with heterogeneous k-shell distributions. Expected patterns: (1) Networks with high degree heterogeneity (scale-free networks) should show greater improvement with adaptive weighting when alpha_degree > 0, (2) Networks with variable clustering (small-world networks) should benefit from alpha_clustering > 0, (3) Optimal alpha values should vary by network type, with combined adaptive schemes (both alpha_degree and alpha_clustering > 0) performing best on heterogeneous networks, (4) Monotonicity metrics should also improve with adaptive weighting, indicating better discriminative power, (5) The improvement should be most pronounced at intermediate beta values (0.10-0.12) where spreading dynamics are most sensitive to node position, (6) Heatmaps should show consistent improvement (darker colors indicating higher tau) for adaptive methods across multiple real networks, validating the hypothesis that topology-aware entropy weighting enhances influential node identification"
+}

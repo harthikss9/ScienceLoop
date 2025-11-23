@@ -1,0 +1,100 @@
+{
+  "nodes": [
+    "K-shell decomposition",
+    "Node position",
+    "Neighborhood properties",
+    "Influential nodes",
+    "Node influence",
+    "Information entropy weighting",
+    "Multiattribute k-shell method",
+    "Real networks",
+    "Experimental simulations",
+    "Node influence ranking",
+    "Position index of node",
+    "Position attribute of node",
+    "Neighbor attribute of node",
+    "Entropy of attribute"
+  ],
+  "edges": [
+    {
+      "source": "K-shell decomposition",
+      "relation": "is refined by",
+      "target": "Node position"
+    },
+    {
+      "source": "K-shell decomposition",
+      "relation": "is refined by",
+      "target": "Neighborhood properties"
+    },
+    {
+      "source": "Node position",
+      "relation": "contributes to",
+      "target": "Node influence"
+    },
+    {
+      "source": "Neighborhood properties",
+      "relation": "contributes to",
+      "target": "Node influence"
+    },
+    {
+      "source": "Node influence",
+      "relation": "is determined by",
+      "target": "Node position"
+    },
+    {
+      "source": "Node influence",
+      "relation": "is determined by",
+      "target": "Neighborhood properties"
+    },
+    {
+      "source": "Information entropy weighting",
+      "relation": "adjusts the weighting of",
+      "target": "Node position"
+    },
+    {
+      "source": "Information entropy weighting",
+      "relation": "adjusts the weighting of",
+      "target": "Neighborhood properties"
+    },
+    {
+      "source": "Multiattribute k-shell method",
+      "relation": "uses",
+      "target": "Information entropy weighting"
+    },
+    {
+      "source": "Multiattribute k-shell method",
+      "relation": "is validated through",
+      "target": "Experimental simulations"
+    },
+    {
+      "source": "Experimental simulations",
+      "relation": "are conducted on",
+      "target": "Real networks"
+    },
+    {
+      "source": "Node influence ranking",
+      "relation": "is enhanced by",
+      "target": "Multiattribute k-shell method"
+    },
+    {
+      "source": "Position index of node",
+      "relation": "contributes to",
+      "target": "Position attribute of node"
+    },
+    {
+      "source": "Position attribute of node",
+      "relation": "is part of",
+      "target": "Node influence"
+    },
+    {
+      "source": "Neighbor attribute of node",
+      "relation": "is part of",
+      "target": "Node influence"
+    },
+    {
+      "source": "Entropy of attribute",
+      "relation": "is used for",
+      "target": "Information entropy weighting"
+    }
+  ]
+}

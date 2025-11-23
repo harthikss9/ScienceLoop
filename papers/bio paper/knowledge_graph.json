@@ -1,0 +1,64 @@
+{
+  "nodes": [
+    "Temperature",
+    "Folding rate",
+    "Protein stability",
+    "Denaturant concentration",
+    "Hydrophobic interaction",
+    "Energy landscape",
+    "Arrhenius behavior of protein folding",
+    "Non-Arrhenius behavior of protein folding kinetics",
+    "Configurational diffusion constant",
+    "Free energy change at the transition state",
+    "Temperature dependence of the folding rate",
+    "Protein folding kinetics",
+    "Protein L stability"
+  ],
+  "edges": [
+    {
+      "source": "Temperature dependence of the folding rate",
+      "relation": "is strongly non-Arrhenius due to",
+      "target": "quadratic argument of the exponential in the rate transition formula"
+    },
+    {
+      "source": "Non-Arrhenius behavior of protein folding kinetics",
+      "relation": "is influenced by",
+      "target": "Temperature dependence of the hydrophobic interaction"
+    },
+    {
+      "source": "Protein L stability",
+      "relation": "affects",
+      "target": "Folding rate"
+    },
+    {
+      "source": "Folding rate",
+      "relation": "is modeled by",
+      "target": "adjusting the denaturant concentration to maintain constant stability"
+    },
+    {
+      "source": "Protein folding kinetics",
+      "relation": "exhibits",
+      "target": "Arrhenius behavior of protein folding when corrected for the temperature dependence of protein stability"
+    },
+    {
+      "source": "Non-Arrhenius temperature dependence of protein folding",
+      "relation": "can be explained by",
+      "target": "configurational diffusion on a rough energy landscape"
+    },
+    {
+      "source": "Non-Arrhenius temperature dependence of protein folding",
+      "relation": "can be explained by",
+      "target": "Temperature dependence of the hydrophobic interactions"
+    },
+    {
+      "source": "Stability-corrected Arrhenius plots",
+      "relation": "provide insights into",
+      "target": "fundamental aspects of protein folding"
+    },
+    {
+      "source": "Configurational diffusion constant",
+      "relation": "has an Arrhenius temperature dependence",
+      "target": "Temperature"
+    }
+  ]
+}
