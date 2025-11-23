@@ -1,0 +1,7 @@
+Baseline Accuracies: {
+    "Naive Bayes": 0.4745762711864407,
+    "Decision Tree": 0.6440677966101694,
+    "Random Forest": 0.4745762711864407,
+    "KNN": 0.4915254237288136,
+    "Logistic Regression": 0.559322033898305
+}

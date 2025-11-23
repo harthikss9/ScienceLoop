@@ -2,68 +2,79 @@
 
 import numpy as np
 import pandas as pd
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+from scipy.stats import mode
+import json
 
 # Constants
-K_NEIGHBORS = [3, 5, 7, 9, 11]
-TRAIN_TEST_SPLIT_RATIO = 0.75
-N_SAMPLES = 195
-BASELINE_FEATURE_COUNT = 16
-RANDOM_SEED = 42
+baseline_NTR = 0.05  # Example value, typically extracted from dataset
+num_features = 16
+train_test_split_ratio = 0.7
+k_neighbors = 5
+num_trees = 100
+max_depth = 10
+num_samples = 195
 
 # Load dataset
 data = pd.read_csv('datasets/synthetic/classification_data.csv')
 
-# Functions
-def euclidean_distance(x, y):
-    return np.sqrt(np.sum((x - y) ** 2))
+# Simulation equations as functions
+def compute_modified_NTR(NTR, multiplier):
+    return NTR * multiplier
 
-def mode(labels):
-    return np.bincount(labels).argmax()
+def naive_bayes_accuracy(X_train, y_train, X_test, y_test):
+    model = GaussianNB()
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    return accuracy_score(y_test, predictions)
 
-def compute_metrics(y_true, y_pred):
-    acc = accuracy_score(y_true, y_pred)
-    prec = precision_score(y_true, y_pred)
-    rec = recall_score(y_true, y_pred)
-    f1 = f1_score(y_true, y_pred)
-    return acc, prec, rec, f1
+def decision_tree_accuracy(X_train, y_train, X_test, y_test):
+    model = DecisionTreeClassifier(max_depth=max_depth)
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    return accuracy_score(y_test, predictions)
 
-def knn_classification(X_train, y_train, X_test, y_test, k):
-    scaler = StandardScaler()
-    X_train_scaled = scaler.fit_transform(X_train)
-    X_test_scaled = scaler.transform(X_test)
-    knn = KNeighborsClassifier(n_neighbors=k)
-    knn.fit(X_train_scaled, y_train)
-    y_pred = knn.predict(X_test_scaled)
-    return compute_metrics(y_test, y_pred)
+def random_forest_accuracy(X_train, y_train, X_test, y_test):
+    model = RandomForestClassifier(n_estimators=num_trees, max_depth=max_depth)
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    return accuracy_score(y_test, predictions)
+
+def knn_accuracy(X_train, y_train, X_test, y_test):
+    model = KNeighborsClassifier(n_neighbors=k_neighbors)
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    return accuracy_score(y_test, predictions)
+
+def logistic_regression_accuracy(X_train, y_train, X_test, y_test):
+    model = LogisticRegression()
+    model.fit(X_train, y_train)
+    predictions = model.predict(X_test)
+    return accuracy_score(y_test, predictions)
 
 def main():
-    results = []
-    for k in K_NEIGHBORS:
-        X = data.iloc[:, :-1].values
-        y = data.iloc[:, -1].values
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=1-TRAIN_TEST_SPLIT_RATIO, random_state=RANDOM_SEED)
-        acc, prec, rec, f1 = knn_classification(X_train, y_train, X_test, y_test, k)
-        results.append((k, acc, prec, rec, f1))
-    # Plotting
-    ks, accs, precs, recs, f1s = zip(*results)
-    plt.figure(figsize=(10, 5))
-    plt.plot(ks, accs, label='Accuracy')
-    plt.plot(ks, precs, label='Precision')
-    plt.plot(ks, recs, label='Recall')
-    plt.plot(ks, f1s, label='F1 Score')
-    plt.xlabel('Number of Neighbors (k)')
-    plt.ylabel('Scores')
-    plt.title('KNN Performance Metrics')
-    plt.legend()
-    plt.savefig('knn_performance_metrics.png', dpi=300, bbox_inches='tight')
-    plt.close()
+    # Step 2: Establish baseline performance
+    baseline_accuracies = {}
+    for algo in ['Naive Bayes', 'Decision Tree', 'Random Forest', 'KNN', 'Logistic Regression']:
+        X_train, X_test, y_train, y_test = train_test_split(data.drop('label', axis=1), data['label'], train_size=train_test_split_ratio, stratify=data['label'])
+        if algo == 'Naive Bayes':
+            baseline_accuracies[algo] = naive_bayes_accuracy(X_train, y_train, X_test, y_test)
+        elif algo == 'Decision Tree':
+            baseline_accuracies[algo] = decision_tree_accuracy(X_train, y_train, X_test, y_test)
+        elif algo == 'Random Forest':
+            baseline_accuracies[algo] = random_forest_accuracy(X_train, y_train, X_test, y_test)
+        elif algo == 'KNN':
+            baseline_accuracies[algo] = knn_accuracy(X_train, y_train, X_test, y_test)
+        elif algo == 'Logistic Regression':
+            baseline_accuracies[algo] = logistic_regression_accuracy(X_train, y_train, X_test, y_test)
+    # Step 3 to 10: Further implementation
+    print('Baseline Accuracies:', json.dumps(baseline_accuracies, indent=4))
 
 if __name__ == '__main__':
     main()

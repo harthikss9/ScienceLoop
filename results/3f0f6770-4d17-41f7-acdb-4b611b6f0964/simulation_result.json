@@ -1,0 +1,26 @@
+{
+  "status": "success",
+  "run_id": "3f0f6770-4d17-41f7-acdb-4b611b6f0964",
+  "stdout": "Simulation completed. Results saved to results.csv.\n",
+  "stderr": "",
+  "exit_code": 0,
+  "artifacts": [
+    {
+      "filename": "report.json",
+      "path": "results/3f0f6770-4d17-41f7-acdb-4b611b6f0964/artifacts/report.json"
+    },
+    {
+      "filename": "plot_auc_vs_ensemble_size.png",
+      "path": "results/3f0f6770-4d17-41f7-acdb-4b611b6f0964/artifacts/plot_auc_vs_ensemble_size.png"
+    },
+    {
+      "filename": "results.csv",
+      "path": "results/3f0f6770-4d17-41f7-acdb-4b611b6f0964/artifacts/results.csv"
+    },
+    {
+      "filename": "dataset1_peptides.csv",
+      "path": "results/3f0f6770-4d17-41f7-acdb-4b611b6f0964/artifacts/dataset1_peptides.csv"
+    }
+  ],
+  "results_path": "results/3f0f6770-4d17-41f7-acdb-4b611b6f0964"
+}

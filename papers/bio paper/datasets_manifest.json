@@ -1,5 +1,0 @@
-{
-  "dataset_type": "none",
-  "datasets": {},
-  "reasoning": "This simulation is a computational thermodynamics study of protein folding kinetics. It involves mathematical equations and calculations using thermodynamic constants (enthalpy, entropy, heat capacity, etc.) to compute folding rates under different temperature and denaturant conditions. All data (temperature arrays, rate constants, denaturant concentrations) will be computed directly from the equations during simulation execution. No external datasets, pre-existing data files, sequences, or samples are required - only mathematical computations based on the provided constants and equations."
-}

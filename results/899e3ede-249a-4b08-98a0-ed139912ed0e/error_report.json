@@ -1,0 +1,15 @@
+{
+  "status": "error",
+  "run_id": "899e3ede-249a-4b08-98a0-ed139912ed0e",
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py\", line 83, in <module>\n    main()\n  File \"/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py\", line 61, in main\n    pp_20_plus_k = compute_pp_20_plus_k(peptides, k)\n                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py\", line 30, in compute_pp_20_plus_k\n    diff = np.abs(peptides[i] - peptides[i + k])\n                  ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~\nTypeError: unsupported operand type(s) for -: 'str' and 'str'\n",
+  "exit_code": 1,
+  "error_summary": "TypeError: unsupported operand type(s) for -: 'str' and 'str'",
+  "artifacts": [
+    {
+      "filename": "dataset1_peptides.csv",
+      "path": "results/899e3ede-249a-4b08-98a0-ed139912ed0e/artifacts/dataset1_peptides.csv"
+    }
+  ],
+  "results_path": "results/899e3ede-249a-4b08-98a0-ed139912ed0e"
+}

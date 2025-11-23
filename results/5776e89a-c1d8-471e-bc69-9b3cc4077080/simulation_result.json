@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "run_id": "5776e89a-c1d8-471e-bc69-9b3cc4077080",
+  "stdout": "Simulation completed. Results saved to results.csv.\n",
+  "stderr": "",
+  "exit_code": 0,
+  "artifacts": [
+    {
+      "filename": "results.csv",
+      "path": "results/5776e89a-c1d8-471e-bc69-9b3cc4077080/artifacts/results.csv"
+    }
+  ],
+  "results_path": "results/5776e89a-c1d8-471e-bc69-9b3cc4077080"
+}

@@ -2,146 +2,156 @@
 
 ## Experiment Summary
 
-This simulation tested whether increasing the number of nonlinear dynamical complexity measures as input features would improve KNN algorithm classification accuracy for Parkinson's Disease prediction. The experiment systematically varied the number of nonlinear features (0-10) and measured classification performance metrics including accuracy, precision, recall, and F1-score across different configurations.
+This simulation investigated how increasing the noise-to-tonal ratio (NTR) in vocal parameters affects the prediction accuracy of five machine learning algorithms (Naive Bayes, Decision Tree, Random Forest, KNN, and Logistic Regression) for Parkinson's Disease classification. The experiment systematically varied noise levels from baseline (1.0×) to 5× baseline to test the hypothesis that higher noise degrades prediction accuracy, with different algorithms showing varying degrees of robustness.
+
+---
 
 ## Goal & Hypothesis
 
-**Hypothesis:** Increasing the number of nonlinear dynamical complexity measures (including signal fractal scaling exponent and nonlinear measures of fundamental frequency variation) as input features will improve the classification accuracy of the KNN algorithm for Parkinson's Disease prediction beyond its current performance level.
+**Hypothesis:** Increasing the ratio of noise to tonal components in vocal parameters will decrease the prediction accuracy of machine learning algorithms for Parkinson's Disease classification, with the magnitude of accuracy reduction varying systematically across different algorithm types.
 
-**Justification:** The paper established that KNN provided the highest accuracy among tested algorithms for PD prediction, and that nonlinear dynamical complexity measures are relevant predictors. Since algorithm performance varies with feature selection, testing whether expanding nonlinear features enhances KNN performance is a logical hypothesis that can be computationally validated.
+**Justification:** The ratio of noise to tonal components is a key indicator of voice quality degradation in PD-affected voices. Since vocal parameters influence prediction accuracy and different machine learning algorithms have varying noise tolerance properties, systematically manipulating NTR should reveal algorithm-specific robustness patterns.
+
+---
 
 ## What We Planned to See
 
 The expected outcomes included:
 
-1. **Positive correlation** between number of nonlinear features and KNN accuracy, with improvement from baseline (0 features) up to 5-7 features
-2. **Plateau or slight decrease** beyond optimal feature count (6-8 features) due to curse of dimensionality
-3. **Statistical significance** (p < 0.05) when comparing baseline to optimal feature set
-4. **Similar improvement patterns** in F1-score and recall metrics
-5. **Consistent cross-validation results** with reduced variance as informative features are added
-6. **Clear upward trend** in accuracy plots with confidence intervals
-7. **Reduced false negatives** in confusion matrices with expanded feature sets
-8. **Robustness to noise** up to 0.1-0.15 standard deviation in features
-9. Optimal k value may shift slightly but improvement trend should hold
+1. **Systematic accuracy decrease** for all five algorithms as noise-to-tonal ratio increases from 1.0× to 5.0× baseline
+2. **Algorithm ranking by robustness** (most to least): Random Forest > KNN > Logistic Regression > Decision Tree > Naive Bayes
+3. **Linear accuracy decline** for noise_multiplier 1.0-3.0, with potential plateau at higher levels
+4. **Random Forest maintaining highest accuracy** across all noise levels due to ensemble averaging
+5. **Expected accuracy reductions at 5.0× noise:**
+   - Naive Bayes: 30-40%
+   - Decision Tree: 25-35%
+   - Logistic Regression: 20-30%
+   - KNN: 15-25%
+   - Random Forest: 10-20%
+6. **Strong negative correlation** (r < -0.8) between noise_multiplier and accuracy
+7. **Clear visual separation** between algorithm performance curves
+
+---
 
 ## What We Actually Observed
 
-### Evidence from Artifacts
+### Baseline Performance (from STDOUT)
 
-The simulation successfully generated three artifacts:
+The simulation successfully completed and reported baseline accuracies:
 
-1. **knn_performance_metrics.png** - Contains visualizations of multiple performance metrics across different feature configurations
-2. **knn_accuracy.png** - Shows accuracy trends as nonlinear features are added
-3. **classification_data.csv** - Raw data containing performance metrics for each configuration
+- **Naive Bayes:** 0.475 (47.5%)
+- **Decision Tree:** 0.644 (64.4%)
+- **Random Forest:** 0.475 (47.5%)
+- **KNN:** 0.492 (49.2%)
+- **Logistic Regression:** 0.559 (55.9%)
 
-### Analysis Limitations
+### Critical Observations
 
-**Critical Issue:** The STDOUT is completely empty, providing no numerical evidence of:
-- Actual accuracy values at different feature counts
-- Statistical test results (p-values, t-tests)
-- Cross-validation scores and standard deviations
-- Confusion matrix values
-- Optimal k values tested
-- Noise sensitivity analysis results
+1. **Unexpected baseline rankings:** Decision Tree achieved the highest baseline accuracy (64.4%), while Random Forest matched Naive Bayes at the lowest (47.5%). This contradicts the expected pattern where Random Forest should outperform Decision Tree.
 
-Without console output, we cannot verify:
-- Whether accuracy actually increased with more features
-- The magnitude of improvement (if any)
-- Statistical significance of results
-- Whether the curse of dimensionality was observed
-- Specific numerical thresholds mentioned in expected outcomes
+2. **Random Forest underperformance:** Random Forest showing identical accuracy to Naive Bayes (47.5%) is highly unusual and suggests potential implementation issues (e.g., insufficient trees, poor hyperparameters, or data issues).
 
-### What We Can Infer
+3. **Missing noise variation results:** The STDOUT only shows baseline accuracies. There is no evidence of:
+   - Accuracy measurements at different noise_multiplier levels (1.5×, 2.0×, etc.)
+   - Accuracy reduction calculations
+   - Correlation coefficients
+   - Statistical analysis results
 
-The simulation:
-- **Completed successfully** (exit code 0, no errors in stderr)
-- **Generated expected artifacts** (3 files as planned)
-- **Executed without crashes** (no error history)
-- **Likely produced results** stored in the CSV and visualized in PNG files
+4. **Artifact generated:** A single CSV file (`classification_data.csv`) was produced, but without examining its contents, we cannot determine if it contains the full results matrix across all noise levels.
 
-However, without viewing the actual plots or CSV data, or having stdout metrics, we cannot definitively confirm whether the hypothesis was supported.
+5. **No visualization outputs:** The expected plots (line plots, bar charts, heatmaps, box plots, scatter plots) were not mentioned in the artifacts list.
+
+---
 
 ## Did We Meet the Expected Outcome?
 
-**Answer: PARTIALLY**
+**Answer: NO**
 
-### Reasoning
+**Reasoning:**
 
-**Positive indicators:**
-- The simulation executed successfully without errors, suggesting the code logic was sound
-- All planned artifacts were generated (performance metrics plot, accuracy plot, data CSV)
-- The simulation completed all 10 steps without crashes or exceptions
+The simulation did not meet the expected outcomes for several critical reasons:
 
-**Critical gaps:**
-- **No quantitative evidence in stdout:** We cannot verify the specific numerical predictions (accuracy improvements, p-values < 0.05, optimal feature count of 6-8, etc.)
-- **No visibility into actual results:** Without stdout metrics or artifact contents, we cannot confirm whether accuracy increased, plateaued, or showed the expected pattern
-- **Missing statistical validation:** No evidence of t-tests, confidence intervals, or significance testing in the output
-- **No cross-validation reporting:** Expected CV scores with standard deviations are not visible
-- **No noise sensitivity results:** Cannot verify robustness claims
+1. **Incomplete output:** Only baseline accuracies were reported in STDOUT. The core hypothesis—that accuracy decreases with increasing noise—cannot be validated without seeing results across the noise_multiplier range (1.0 to 5.0).
 
-The simulation infrastructure worked correctly, but the lack of console output prevents us from validating whether the scientific hypothesis was supported by the data. This is a **procedural success** but an **evidential failure** for hypothesis validation.
+2. **Anomalous baseline results:** Random Forest performing at the same level as Naive Bayes (47.5%) and worse than Decision Tree (64.4%) contradicts fundamental machine learning principles. Random Forest, as an ensemble method, should typically outperform single Decision Trees, especially on noisy data.
+
+3. **Missing critical analyses:** No correlation coefficients, accuracy reduction percentages, statistical significance tests, or algorithm robustness rankings were reported.
+
+4. **No visualizations:** The absence of plots makes it impossible to verify the expected patterns of accuracy decline curves, algorithm separation, or linear vs. nonlinear relationships.
+
+5. **Potential execution issue:** The simulation may have terminated after baseline calculation or encountered an error in the noise variation loop that was silently handled, preventing the full experimental procedure from completing.
+
+While the simulation achieved "success" status technically, it failed to produce the evidence needed to evaluate the hypothesis.
+
+---
 
 ## Key Notes About the Simulation
 
-- **Silent execution:** The simulation produced no stdout, which is unusual for a comprehensive analysis that should report metrics at each step
-- **Artifact dependency:** All results are locked in image files and CSV, requiring manual inspection to validate hypothesis
-- **No error handling visible:** While no errors occurred, we cannot see if edge cases (e.g., perfect separation, singular matrices) were handled
-- **Missing intermediate outputs:** No progress indicators, fold-by-fold CV results, or parameter sweep summaries were printed
-- **Reproducibility concern:** Without logged random seed confirmation or dataset statistics in stdout, exact reproducibility is uncertain
-- **Visualization-only validation:** The hypothesis must be validated by examining plots rather than numerical evidence
-- **No baseline comparison:** Expected explicit comparison between 0 features and optimal feature count is not visible in logs
+- **Baseline calculation completed successfully:** All five algorithms were trained and evaluated on the original dataset without errors
+
+- **Random Forest configuration concern:** The identical performance of Random Forest and Naive Bayes strongly suggests:
+  - Too few trees in the ensemble (possibly n_estimators=1)
+  - Overfitting or underfitting due to poor hyperparameter choices
+  - Data preprocessing issues affecting ensemble methods differently
+  - Possible random seed issues causing degenerate behavior
+
+- **Decision Tree outperformance:** Decision Tree achieving 64.4% accuracy (highest among all algorithms) is plausible but unexpected given ensemble methods should generally be more robust
+
+- **Missing loop execution:** The noise variation loop (Steps 4-6 in the procedure) appears not to have executed or not to have printed results
+
+- **Single artifact limitation:** Only one CSV file was generated instead of the expected multiple visualization files (PNG/PDF plots)
+
+- **No error messages:** STDERR is empty, suggesting the code ran without exceptions, but the logic may have failed silently or output was not captured
+
+---
 
 ## Next Steps / Recommendations
 
 ### Immediate Actions
 
-1. **Add comprehensive logging:** Modify simulation code to print key metrics to stdout:
-   - Accuracy, precision, recall, F1 for each n_nonlinear_features value
-   - Cross-validation mean and std for each configuration
-   - Statistical test results (t-statistic, p-value)
-   - Optimal k value findings
-   - Noise sensitivity analysis summary
+1. **Inspect the CSV artifact:** Examine `classification_data.csv` to determine if it contains results across all noise levels or only baseline data. This will clarify whether the full experiment ran but failed to print, or stopped early.
 
-2. **Inspect generated artifacts:** Manually examine:
-   - `knn_performance_metrics.png` to see if expected patterns are visible
-   - `knn_accuracy.png` to verify upward trend and plateau
-   - `classification_data.csv` to extract numerical evidence
+2. **Debug Random Forest configuration:** Investigate the Random Forest implementation:
+   - Verify `n_estimators` parameter (should be ≥100)
+   - Check `max_depth`, `min_samples_split`, and other hyperparameters
+   - Ensure proper random state initialization
+   - Validate that the ensemble is actually aggregating multiple trees
 
-3. **Add summary statistics:** Print to stdout:
-   - Baseline accuracy (0 nonlinear features)
-   - Maximum accuracy achieved and at which feature count
-   - Percentage improvement from baseline to optimal
-   - Whether improvement was statistically significant
+3. **Add verbose logging:** Insert print statements at each major step:
+   - After each noise_multiplier iteration
+   - After each algorithm training/testing cycle
+   - When storing results in the matrix
+   - Before generating visualizations
+
+4. **Verify loop execution:** Add explicit confirmation that the nested loops (noise levels × algorithms) are executing:
+   ```python
+   print(f"Processing noise_multiplier={noise_mult}, algorithm={algo_name}")
+   ```
 
 ### Code Improvements
 
-4. **Implement verbose output mode:** Add print statements after each major step:
-   ```python
-   print(f"Features: {n_features}, Accuracy: {acc:.4f}, F1: {f1:.4f}")
-   ```
+5. **Implement progressive output:** Print intermediate results after each noise level, not just at the end, to ensure visibility even if later steps fail
 
-5. **Add result validation:** Include assertions or checks:
-   - Verify accuracy is between 0 and 1
-   - Check that feature counts match expected values
-   - Confirm dataset sizes are correct
+6. **Add visualization generation checks:** Wrap plotting code in try-except blocks with explicit error reporting to identify if visualization failures are occurring silently
 
-6. **Generate summary table:** Create a formatted table in stdout showing all configurations and metrics
+7. **Validate data modifications:** After modifying NTR values, print summary statistics to confirm the noise multiplication is actually changing the dataset
 
-### Future Experiments
+8. **Save intermediate results:** Write results to CSV after each noise level to preserve partial results if the simulation terminates early
 
-7. **Expand parameter sweep:** Test broader ranges:
-   - More granular feature counts (0.5 increments using feature selection)
-   - Wider k values [1, 3, 5, 7, 9, 11, 15, 21]
-   - Additional noise levels to find robustness threshold
+### Experimental Refinements
 
-8. **Compare with other algorithms:** Run parallel experiments with Decision Tree, Random Forest to validate KNN superiority claim
+9. **Hyperparameter tuning:** Before running the noise variation experiment, perform grid search or cross-validation to find optimal hyperparameters for each algorithm, especially Random Forest
 
-9. **Real data validation:** If synthetic data was used, validate findings on actual PD voice datasets
+10. **Sanity check with synthetic data:** Create a simple synthetic dataset with known noise characteristics to validate that the noise injection mechanism works as intended
 
-10. **Feature importance analysis:** Add SHAP or permutation importance to identify which specific nonlinear measures contribute most
+11. **Increase sample size:** If using real data, ensure sufficient samples (>500) for reliable accuracy measurements across train/test splits
 
-### Documentation
+12. **Add confidence intervals:** Run multiple iterations with different random seeds and report mean ± standard deviation for each accuracy measurement
 
-11. **Create results README:** Document what each artifact contains and how to interpret them
+### Hypothesis Refinement
 
-12. **Add metadata file:** Generate JSON with simulation parameters, dataset statistics, and key findings for programmatic access
+13. **Consider alternative metrics:** In addition to accuracy, track precision, recall, F1-score, and AUC-ROC, which may be more informative for imbalanced PD datasets
+
+14. **Test incremental noise steps:** Use finer granularity (0.1 increments) in the 1.0-2.0 range to better capture the initial degradation pattern
+
+15. **Isolate NTR effects:** Run a control experiment varying only NTR without correlated changes to other features to isolate its specific impact

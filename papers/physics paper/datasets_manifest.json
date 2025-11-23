@@ -1,7 +1,0 @@
-{
-  "dataset_type": "synthetic",
-  "datasets": {
-    "stellar_parameters": "papers/physics paper/datasets/synthetic/stellar_parameters_data.csv"
-  },
-  "reasoning": "The simulation requires a parameter grid combining rotation velocities (9 values), inclination angles (10 values), and beta model values (6 values), totaling 540 combinations. The procedure steps indicate synthetic line profiles will be generated from these parameters, and results (beta_obs, D_mom) will be computed. A CSV dataset with the input parameter combinations is needed to drive the simulation, allowing systematic exploration of the (v_rot, inclination, beta_model) parameter space for O6.5 III stars."
-}

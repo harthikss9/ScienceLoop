@@ -1,71 +1,76 @@
 {
   "simulation_equations": [
-    "KNN Classification: y_pred = mode({y_i | x_i \u2208 N_k(x_test)}), where N_k(x_test) are k nearest neighbors",
-    "Euclidean Distance: d(x_i, x_j) = sqrt(sum((x_i[f] - x_j[f])^2)) for all features f",
-    "Classification Accuracy: Acc = (TP + TN) / (TP + TN + FP + FN)",
-    "Precision: P = TP / (TP + FP)",
-    "Recall: R = TP / (TP + FN)",
-    "F1-Score: F1 = 2 * (P * R) / (P + R)",
-    "Feature Set Expansion: X_expanded = [X_base, X_nonlinear_1, X_nonlinear_2, ..., X_nonlinear_n]"
+    "NTR_modified = NTR_baseline * noise_multiplier",
+    "P(PD|features) = (P(features|PD) * P(PD)) / P(features) for Naive Bayes",
+    "Gini_impurity = 1 - sum(p_i^2) for Decision Tree splits",
+    "RF_prediction = mode(tree_predictions) for Random Forest ensemble",
+    "KNN_prediction = mode(k_nearest_labels) where distance = sqrt(sum((x_i - y_i)^2))",
+    "Logistic_probability = 1 / (1 + exp(-(beta_0 + sum(beta_i * x_i)))) for Logistic Regression",
+    "Accuracy = (TP + TN) / (TP + TN + FP + FN)",
+    "Accuracy_reduction = Accuracy_baseline - Accuracy_modified"
   ],
   "constants_required": [
     {
-      "name": "k_neighbors",
-      "description": "Number of nearest neighbors for KNN algorithm",
-      "value_or_range": "[3, 5, 7, 9, 11] - typical values for KNN classification"
+      "name": "baseline_NTR",
+      "description": "Baseline ratio of noise to tonal components from original dataset",
+      "value_or_range": "extracted from dataset, typically 0.01 to 0.05 for healthy, 0.05 to 0.3 for PD patients"
+    },
+    {
+      "name": "num_features",
+      "description": "Number of vocal parameters used as features",
+      "value_or_range": "16 features as mentioned in paper (fundamental frequency measures, amplitude variations, nonlinear measures)"
     },
     {
       "name": "train_test_split_ratio",
-      "description": "Ratio for splitting dataset into training and testing sets",
+      "description": "Ratio for splitting data into training and testing sets",
       "value_or_range": "0.7 to 0.8 for training, 0.2 to 0.3 for testing"
     },
     {
-      "name": "n_samples",
-      "description": "Number of voice samples in the dataset",
-      "value_or_range": "195 (as per typical PD voice datasets like Oxford Parkinson's Dataset)"
+      "name": "k_neighbors",
+      "description": "Number of neighbors for KNN algorithm",
+      "value_or_range": "3 to 10, typically 5"
     },
     {
-      "name": "baseline_feature_count",
-      "description": "Number of baseline vocal features (fundamental frequency measures, amplitude measures, noise ratios)",
-      "value_or_range": "16 (typical baseline features excluding nonlinear measures)"
+      "name": "num_trees",
+      "description": "Number of trees in Random Forest",
+      "value_or_range": "50 to 200, typically 100"
     },
     {
-      "name": "random_seed",
-      "description": "Seed for reproducibility of train-test splits and synthetic data generation",
-      "value_or_range": "42"
+      "name": "max_depth",
+      "description": "Maximum depth for Decision Tree and Random Forest",
+      "value_or_range": "5 to 20, typically 10"
+    },
+    {
+      "name": "num_samples",
+      "description": "Number of samples in dataset",
+      "value_or_range": "195 samples as mentioned in paper context"
     }
   ],
   "variables_to_vary": [
     {
-      "name": "n_nonlinear_features",
-      "description": "Number of nonlinear dynamical complexity measures added to the feature set (including signal fractal scaling exponent and nonlinear measures of fundamental frequency variation)",
-      "range": "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",
-      "units": "count"
+      "name": "noise_multiplier",
+      "description": "Multiplier applied to baseline NTR to systematically increase noise-to-tonal ratio",
+      "range": "[1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]",
+      "units": "dimensionless multiplier"
     },
     {
-      "name": "feature_noise_level",
-      "description": "Standard deviation of Gaussian noise added to nonlinear features to simulate measurement variability",
-      "range": "[0.0, 0.05, 0.1, 0.15, 0.2]",
-      "units": "normalized units"
-    },
-    {
-      "name": "class_balance_ratio",
-      "description": "Ratio of PD positive to PD negative samples in synthetic dataset",
-      "range": "[0.4, 0.5, 0.6, 0.7]",
-      "units": "ratio"
+      "name": "algorithm_type",
+      "description": "Type of machine learning algorithm used for classification",
+      "range": "['Naive Bayes', 'Decision Tree', 'Random Forest', 'KNN', 'Logistic Regression']",
+      "units": "categorical"
     }
   ],
   "procedure_steps": [
-    "Step 1: Initialize simulation environment - Set random seed for reproducibility, define baseline feature count (16 features: average/max/min fundamental frequency, variation in fundamental frequency, variation in amplitude, noise-to-tonal ratio, etc.), and create synthetic PD voice dataset with known class labels (0=healthy, 1=PD) using multivariate normal distributions with different means for each class",
-    "Step 2: Create baseline feature set - Generate baseline vocal parameters (fundamental frequency measures, amplitude measures, noise ratios) with realistic distributions based on PD literature (healthy: mean fundamental frequency ~150Hz, PD: ~140Hz with higher variation)",
-    "Step 3: Implement feature expansion loop - For each value of n_nonlinear_features from 0 to 10, generate additional nonlinear complexity features (fractal scaling exponents, nonlinear fundamental frequency variation measures) with correlations to PD status, creating expanded feature matrices X_expanded",
-    "Step 4: Apply KNN classification - For each feature set configuration, split data into training (75%) and testing (25%) sets, normalize features using StandardScaler, train KNN classifier with k=5 neighbors, and predict on test set",
-    "Step 5: Compute performance metrics - Calculate accuracy, precision, recall, and F1-score for each feature set configuration, storing results in arrays indexed by n_nonlinear_features",
-    "Step 6: Perform cross-validation - Implement 5-fold cross-validation for each feature set to ensure robust accuracy estimates and compute mean and standard deviation of accuracy across folds",
-    "Step 7: Test sensitivity to noise - For each n_nonlinear_features value, add varying levels of Gaussian noise to features and measure impact on classification accuracy to assess robustness",
-    "Step 8: Vary k parameter - Test KNN with different k values [3, 5, 7, 9, 11] for each feature set to find optimal k and verify that improvement holds across different k values",
-    "Step 9: Generate visualizations - Create line plots of accuracy vs n_nonlinear_features, bar charts comparing baseline vs expanded feature sets, confusion matrices for best and worst configurations, and heatmaps showing accuracy across (n_nonlinear_features, k_neighbors) parameter space",
-    "Step 10: Statistical analysis - Perform paired t-tests comparing accuracy with baseline features vs accuracy with expanded nonlinear features to determine statistical significance of improvements, calculate effect sizes, and generate confidence intervals for accuracy improvements"
+    "Step 1: Load or generate synthetic vocal parameter dataset with baseline NTR values and health status labels (PD=1, healthy=0). Include all 16 vocal features: average/max/min fundamental frequency, frequency variation, amplitude variation, NTR, nonlinear complexity measures, fractal scaling exponent, etc.",
+    "Step 2: Establish baseline performance by training all five algorithms (Naive Bayes, Decision Tree, Random Forest, KNN, Logistic Regression) on original dataset with baseline NTR. Use cross-validation to compute baseline accuracy for each algorithm. Store these as reference values.",
+    "Step 3: Initialize noise_multiplier array from 1.0 to 5.0 with step size 0.5. Create results matrix of size (num_algorithms \u00d7 num_noise_levels) to store accuracy values.",
+    "Step 4: For each noise_multiplier value: (a) Create modified dataset by multiplying NTR feature by noise_multiplier while keeping other features constant, (b) Add correlated degradation to frequency variation and amplitude variation features (increase by 10-20% per unit noise increase) to simulate realistic voice quality degradation.",
+    "Step 5: For each modified dataset and each algorithm: (a) Split data into training (70%) and testing (30%) sets using stratified sampling, (b) Train algorithm on training set with modified NTR, (c) Predict on test set, (d) Calculate accuracy = (TP + TN) / total_samples, (e) Store accuracy in results matrix.",
+    "Step 6: For each algorithm, compute accuracy_reduction = baseline_accuracy - modified_accuracy for each noise level. Calculate percentage reduction = (accuracy_reduction / baseline_accuracy) \u00d7 100.",
+    "Step 7: Perform statistical analysis: (a) Compute mean and standard deviation of accuracy across multiple runs (10 iterations with different random seeds), (b) Calculate correlation coefficient between noise_multiplier and accuracy for each algorithm, (c) Perform ANOVA to test if accuracy differences across algorithms are statistically significant.",
+    "Step 8: Generate visualizations: (a) Line plot showing accuracy vs noise_multiplier for all five algorithms on same axes, (b) Bar plot comparing baseline vs final (noise_multiplier=5.0) accuracy for each algorithm, (c) Heatmap showing accuracy values across algorithms (rows) and noise levels (columns), (d) Box plots showing accuracy distribution for each algorithm across all noise levels, (e) Scatter plot with regression lines showing accuracy reduction rate for each algorithm.",
+    "Step 9: Compute derived metrics: (a) Slope of accuracy decline for each algorithm (linear regression of accuracy vs noise_multiplier), (b) Robustness index = accuracy at noise_multiplier=5.0 / baseline_accuracy, (c) Rank algorithms by robustness to noise degradation.",
+    "Step 10: Validate hypothesis by checking: (a) Does accuracy decrease monotonically with increasing noise_multiplier for all algorithms?, (b) Do different algorithms show different magnitudes of accuracy reduction?, (c) Which algorithm is most/least robust to NTR degradation?, (d) Is the relationship linear or nonlinear?"
   ],
-  "expected_outcomes": "The simulation should reveal a positive correlation between the number of nonlinear dynamical complexity measures and KNN classification accuracy for Parkinson's Disease prediction. Specifically: (1) Accuracy should increase from baseline (with 0 additional nonlinear features) as n_nonlinear_features increases from 0 to approximately 5-7 features, (2) Beyond an optimal number of features (likely 6-8), accuracy may plateau or slightly decrease due to curse of dimensionality, (3) The improvement should be statistically significant (p < 0.05) when comparing baseline to optimal feature set, (4) F1-score and recall should show similar improvement patterns, indicating better detection of PD cases, (5) Cross-validation results should show consistent improvement with reduced variance as informative nonlinear features are added, (6) The optimal k value for KNN may shift slightly with feature set expansion but the improvement trend should hold across different k values, (7) Visualization should show clear upward trend in accuracy plot with error bars indicating confidence intervals, (8) Confusion matrices should show reduced false negatives (missed PD cases) with expanded feature sets, and (9) Sensitivity analysis should demonstrate that the improvement is robust to moderate levels of feature noise (up to 0.1-0.15 standard deviation), confirming that nonlinear complexity measures provide genuine predictive value beyond baseline vocal parameters"
+  "expected_outcomes": "The simulation should reveal: (1) A systematic decrease in prediction accuracy for all five algorithms as the noise-to-tonal ratio increases from baseline to 5\u00d7 baseline, confirming the primary hypothesis. (2) Different algorithms will exhibit varying degrees of sensitivity to NTR degradation, with expected ranking (from most to least robust): Random Forest > KNN > Logistic Regression > Decision Tree > Naive Bayes, based on their inherent noise tolerance properties. (3) The accuracy reduction should be approximately linear for noise_multiplier range 1.0-3.0, then potentially plateau or show nonlinear decline at higher noise levels. (4) Random Forest should maintain highest absolute accuracy across all noise levels due to ensemble averaging, while Naive Bayes should show steepest decline due to its assumption of feature independence being violated by noise. (5) At noise_multiplier=5.0, expected accuracy reductions: Naive Bayes (30-40%), Decision Tree (25-35%), Logistic Regression (20-30%), KNN (15-25%), Random Forest (10-20%). (6) Correlation coefficients between noise_multiplier and accuracy should be strongly negative (r < -0.8) for all algorithms. (7) Visualization should show clear separation between algorithm performance curves, with Random Forest maintaining highest accuracy throughout and Naive Bayes showing steepest descent."
 }

@@ -1,7 +1,0 @@
-{
-  "dataset_type": "synthetic",
-  "datasets": {
-    "dataset1": "papers/mldl/datasets/synthetic/dataset1_peptides.csv"
-  },
-  "reasoning": "The simulation plan explicitly mentions generating synthetic peptide datasets with binary labels for classification. Step 2 states 'Generate synthetic peptide datasets - Create random peptide sequences of length M with binary labels'. The plan requires peptide sequences of varying lengths (8-15 amino acids), with training/test splits, binary classification labels, and physicochemical property values for each amino acid. Multiple dataset sizes (500-2000) and peptide lengths need to be generated for the parameter sweep. Dataset type is synthetic peptide_sequences with CSV format for easy loading and processing."
-}

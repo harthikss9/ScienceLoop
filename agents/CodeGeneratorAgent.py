@@ -119,18 +119,56 @@ CRITICAL: You MUST use the CONVERTED paths (relative to script directory) in you
     # Prepare input for OpenAI
     input_text = f"""You are a Code Generator Agent. Your job is to convert a simulation plan into a complete, runnable Python script.
 {fix_context}
+
+═══════════════════════════════════════════════════════════════════════════════
+CRITICAL: YOU MUST FOLLOW THE SIMULATION PLAN EXACTLY - DO NOT GENERATE GENERIC CODE
+═══════════════════════════════════════════════════════════════════════════════
+
 SIMULATION PLAN:
 {json.dumps(simulation_plan, indent=2)}
 {dataset_info}
 
-CRITICAL PLOTTING INSTRUCTIONS:
-- ONLY import matplotlib if the simulation plan explicitly mentions plotting, visualization, graphs, or charts
-- If plotting is needed, add at the very top (BEFORE other imports):
+⚠️  WARNING: The simulation plan above contains SPECIFIC requirements:
+- simulation_equations: These EXACT equations must be implemented
+- variables_to_vary: These EXACT variables must be varied in loops
+- procedure_steps: These EXACT steps must be implemented in order
+- expected_outcomes: The code must produce outputs that match these expectations
+
+❌ DO NOT generate generic ML/classification code if the plan asks for ensemble analysis
+❌ DO NOT generate placeholder comments - implement EVERY step with real code
+❌ DO NOT skip steps from procedure_steps - implement ALL of them
+❌ DO NOT generate code that doesn't match the simulation_equations
+
+✅ DO read the procedure_steps carefully and implement each one
+✅ DO use the exact variables_to_vary with their specified ranges
+✅ DO implement the exact simulation_equations as Python functions
+✅ DO generate outputs that match expected_outcomes
+
+CRITICAL OUTPUT INSTRUCTIONS - DEFAULT TO TEXT/CSV, NOT PLOTS:
+═══════════════════════════════════════════════════════════════════════════════
+⚠️  MOST SIMULATIONS OUTPUT TEXT/CSV DATA, NOT GRAPHS ⚠️
+
+DEFAULT BEHAVIOR: Generate text/CSV outputs by default:
+- Print results to stdout (print statements with metrics, statistics, summaries)
+- Save data to CSV files (results.csv, summary.csv, metrics.csv, etc.)
+- Save text reports (results.txt, summary.txt, etc.)
+- Use JSON for structured data (results.json)
+
+ONLY generate plots IF the simulation plan EXPLICITLY mentions:
+- "plot", "graph", "chart", "visualize", "figure", "diagram", "visualization"
+- Check BOTH procedure_steps AND expected_outcomes for these keywords
+- If NO plotting keywords found → DO NOT import matplotlib, DO NOT generate plots
+- If plotting keywords ARE found → then import matplotlib and generate plots
+
+PLOTTING RULES (only if plotting is explicitly mentioned):
+- Add at the very top (BEFORE other imports):
   import matplotlib
   matplotlib.use('Agg')  # Non-interactive backend to prevent hanging
   import matplotlib.pyplot as plt
-- If NO plotting is mentioned in the plan, DO NOT import matplotlib at all
-- Check expected_outcomes and procedure_steps for plot-related terms before deciding
+- ALWAYS save plots with plt.savefig("plot_name.png", dpi=300, bbox_inches='tight')
+- NEVER use plt.show() - it blocks execution
+- Use plt.close() after saving each plot
+- CRITICAL: Before plt.plot(), verify x and y arrays have same length
 
 Your responsibilities:
 
@@ -140,8 +178,9 @@ Your responsibilities:
    - If probability distributions appear → use numpy/scipy.stats
    - If graph or network terms appear → use networkx
    - If ML training loops appear → use sklearn or torch (only if explicitly required)
-   - If plotting is mentioned → use matplotlib
-   - If nothing specific is indicated → default to numpy + matplotlib
+   - If plotting is EXPLICITLY mentioned → use matplotlib
+   - DEFAULT: numpy + pandas (for CSV outputs) + print statements (for text outputs)
+   - DO NOT default to matplotlib - only use it if plotting is explicitly requested
 
 2. GENERATE A SINGLE COMPLETE PYTHON SCRIPT that includes:
    - All necessary imports at the top
@@ -160,16 +199,23 @@ Your responsibilities:
      * Example WRONG: for x_val in x_range: for y_val in y_range: acc = compute(); results.append(acc)  # Multiple per x
      * If plotting against outer loop variable, only append inside outer loop, NOT in inner loops
      * Before plotting, verify: len(x_array) == len(y_array)
-   - INTELLIGENT PLOTTING DECISION:
-     * Only generate plots if the simulation plan explicitly mentions visualization, plotting, graphs, charts, or visual output
-     * Check expected_outcomes and procedure_steps for plot-related keywords: "plot", "graph", "chart", "visualize", "figure", "diagram"
-     * If NO plotting keywords are found, DO NOT generate any plotting code (no matplotlib imports for plotting, no plt.savefig calls)
-     * If plotting IS mentioned, then:
+   - INTELLIGENT OUTPUT DECISION (DEFAULT TO TEXT/CSV):
+     * DEFAULT: Generate text/CSV outputs:
+       - Print all results, metrics, statistics to stdout using print() statements
+       - Save data to CSV files using pandas.to_csv() or csv module
+       - Save structured data to JSON files using json.dump()
+       - Save text reports to .txt files
+       - Include clear headers, labels, and formatting in text outputs
+     * ONLY generate plots if the simulation plan EXPLICITLY mentions: "plot", "graph", "chart", "visualize", "figure", "diagram", "visualization"
+     * Check BOTH expected_outcomes AND procedure_steps for plotting keywords
+     * If NO plotting keywords found → DO NOT import matplotlib, DO NOT generate any plots
+     * If plotting keywords ARE found → then:
+       - Import matplotlib and generate the requested plots
        - ALWAYS save plots with plt.savefig("plot_name.png", dpi=300, bbox_inches='tight')
        - NEVER use plt.show() - it blocks execution
        - Use plt.close() after saving each plot
-       - CRITICAL: Before plt.plot(), verify x and y arrays have same length: assert len(x_array) == len(y_array), "Dimension mismatch: x and y must have same length"
-     * For data-only outputs (CSV, JSON, text), save files without plots
+       - CRITICAL: Before plt.plot(), verify x and y arrays have same length
+     * Most simulations should output TEXT/CSV, not plots - default to text unless explicitly asked for plots
    - A main() function that executes the full simulation
    - if __name__ == "__main__": main() block
 
@@ -192,16 +238,20 @@ Your responsibilities:
    - Adapt the code style to the domain (e.g., network algorithms use networkx, 
      differential equations use scipy.integrate, etc.)
 
-5. CODE QUALITY:
+5. CODE QUALITY AND OUTPUT:
    - Use descriptive variable names
    - Break complex operations into functions
    - Add docstrings for main functions
    - Use numpy arrays for numerical computations
-   - Use matplotlib for all plotting
-   - IMPORTANT: Always save plots using plt.savefig() with descriptive filenames
+   - DEFAULT OUTPUT: Print results to stdout and save to CSV/text files
+   - Use pandas for CSV output: df.to_csv('results.csv', index=False)
+   - Use print() statements to output metrics, statistics, summaries to stdout
+   - Use json.dump() for structured data output
+   - ONLY use matplotlib if plotting is explicitly mentioned in the plan
+   - If plotting: Always save plots using plt.savefig() with descriptive filenames
    - NEVER use plt.show() - it blocks execution and opens windows
    - After saving plots, use plt.close() to free memory
-   - Make the code production-ready (no debugging prints unless necessary)
+   - Make the code production-ready with clear text output
 
 6. CRITICAL DATA STRUCTURE RULES:
    - When generating data for sklearn models, ALWAYS return numpy arrays of numbers, NOT dictionaries
@@ -216,14 +266,17 @@ Your responsibilities:
    - If generating synthetic data, build feature matrix directly as list of lists, then convert to np.array
 
 7. COMMON MISTAKES TO AVOID:
+   - DO NOT default to generating plots - most simulations output text/CSV
+   - DO NOT import matplotlib unless plotting is explicitly mentioned in the plan
    - DO NOT return np.array(list_of_dicts) - sklearn cannot handle arrays of dictionaries
    - DO NOT forget to convert dictionaries to numeric arrays before sklearn operations
    - DO NOT use placeholders or incomplete implementations - every function must be fully implemented
    - DO NOT skip error handling for edge cases (empty arrays, division by zero, etc.)
    - DO NOT forget to implement ALL steps from procedure_steps - every step must have real code
    - DO NOT create incomplete main() functions - all planned steps must execute
-   - DO NOT forget to save outputs (CSV files, plots) - use explicit file paths
-   - DO NOT use plt.show() - always use plt.savefig() + plt.close()
+   - DO NOT forget to save outputs (CSV files, text files) - use explicit file paths
+   - DO NOT forget to print results to stdout - use print() statements for metrics and summaries
+   - DO NOT use plt.show() - always use plt.savefig() + plt.close() (only if plotting)
    - DO NOT collect multiple values per x-axis point in nested loops when plotting
    - CRITICAL: If plotting, ensure collection loop matches x-axis loop exactly
    - Example WRONG: for x_val in range(11): for y_val in range(5): results.append(compute()) then plt.plot(range(11), results)  # 55 values vs 11 x-values
@@ -235,9 +288,12 @@ Your responsibilities:
    - Before model training, check: assert y.ndim == 1, "y must be 1D array"
    - After model training, verify predictions are generated
    - Add print statements showing progress: "Step X: [description] completed"
-   - Verify all expected outputs are generated (files saved, plots created)
-   - BEFORE PLOTTING: Always add assert len(x_array) == len(y_array), "Dimension mismatch: x and y arrays must have same length"
-   - If collecting results in nested loops, verify collection logic matches plotting requirements
+   - Add print statements outputting results: "Results: AUC = {{auc:.4f}}, Accuracy = {{acc:.4f}}"
+   - Print summary statistics, metrics, and key findings to stdout
+   - Save all results to CSV/text files with clear formatting
+   - Verify all expected outputs are generated (files saved, text printed to stdout)
+   - BEFORE PLOTTING (if plotting): Always add assert len(x_array) == len(y_array), "Dimension mismatch: x and y arrays must have same length"
+   - If collecting results in nested loops, verify collection logic matches output requirements
 
 9. CRITICAL LOOP AND PLOTTING PATTERN:
    CORRECT PATTERN for plotting:
@@ -303,15 +359,31 @@ Your responsibilities:
    ```
 
 BEFORE RETURNING CODE, REVIEW IT FOR THESE CRITICAL ISSUES:
-1. Check loop structure: If plotting, ensure collection loop matches x-axis loop (same number of iterations)
-2. Verify dimensions: Count how many times you append to results/accuracies vs x-axis length
-3. Check file paths: All dataset paths must be relative to script directory (not project root)
-4. Verify data structures: No arrays of dictionaries for sklearn
-5. Check plotting: If plotting, verify len(x_array) == len(y_array) before plt.plot()
+1. ✅ VERIFY PLAN MATCHING: Check that your code implements ALL steps from procedure_steps:
+   - Count how many steps are in procedure_steps
+   - Verify each step has corresponding code (not just comments)
+   - Ensure variables_to_vary are actually varied in loops
+   - Ensure simulation_equations are implemented as functions
+   - If the plan mentions "ensemble", "diversity", "correlation" - your code MUST include these
+   - If the plan mentions specific plots (e.g., "Plot 1: AUC vs ensemble_size"), generate those plots
+   - If the plan does NOT mention plots, DO NOT generate plots - output text/CSV instead
+2. ✅ VERIFY OUTPUT TYPE: Check if you're generating the right output format:
+   - DEFAULT: Print results to stdout and save to CSV/text files
+   - Check if plan mentions "plot", "graph", "chart", "visualize" - only then generate plots
+   - If NO plotting keywords → print results and save CSV, DO NOT import matplotlib
+   - If plotting keywords found → generate plots AND print results
+   - Most simulations should output TEXT/CSV, not graphs
+3. Check loop structure: If plotting, ensure collection loop matches x-axis loop (same number of iterations)
+4. Verify dimensions: Count how many times you append to results/accuracies vs x-axis length
+5. Check file paths: All dataset paths must be relative to script directory (not project root)
+6. Verify data structures: No arrays of dictionaries for sklearn
+7. Check plotting: If plotting, verify len(x_array) == len(y_array) before plt.plot()
+8. Verify outputs: Check that expected_outcomes mentions are addressed (e.g., if it says "correlation r > 0.7", compute and print correlation)
+9. Verify text output: Ensure print() statements output all key metrics, statistics, and results to stdout
 
 Return ONLY valid JSON in this exact format:
 {{
-  "python_code": "#!/usr/bin/env python3\\n\\nimport numpy as np\\nimport matplotlib.pyplot as plt\\n# ... full complete Python script here ...\\n\\nif __name__ == '__main__':\\n    main()"
+  "python_code": "#!/usr/bin/env python3\\n\\nimport numpy as np\\nimport pandas as pd\\n# ... full complete Python script here ...\\n# DEFAULT: Print results to stdout and save to CSV\\n# ONLY import matplotlib if plotting is explicitly mentioned\\n\\nif __name__ == '__main__':\\n    main()"
 }}
 
 The python_code field must contain the ENTIRE runnable Python script as a single string with proper newlines (\\n).
@@ -401,6 +473,30 @@ Return ONLY the JSON, no additional text or explanation."""
     if not any(keyword in python_code for keyword in python_keywords):
         raise Exception("Generated code doesn't appear to be valid Python")
     
+    # Validation: Check if code matches simulation plan
+    procedure_steps = simulation_plan.get("procedure_steps", [])
+    if procedure_steps:
+        # Check if code mentions key terms from procedure steps
+        step_text = " ".join(procedure_steps).lower()
+        code_lower = python_code.lower()
+        
+        # Check for critical terms that should be in the code
+        critical_terms = []
+        if "ensemble" in step_text:
+            critical_terms.append("ensemble")
+        if "diversity" in step_text:
+            critical_terms.append("diversity")
+        if "correlation" in step_text:
+            critical_terms.append("correlation")
+        if "statistical" in step_text or "regression" in step_text:
+            critical_terms.append("statistical")
+        
+        missing_terms = [term for term in critical_terms if term not in code_lower]
+        if missing_terms:
+            print(f"WARNING: Generated code may not match simulation plan. Missing terms: {missing_terms}", file=sys.stderr)
+            print(f"Procedure steps mention: {', '.join(critical_terms)} but code doesn't contain: {', '.join(missing_terms)}", file=sys.stderr)
+            print("This may indicate the code doesn't follow the plan exactly.", file=sys.stderr)
+    
     # Validate Python syntax
     try:
         ast.parse(python_code)
@@ -430,14 +526,14 @@ Return ONLY the JSON, no additional text or explanation."""
                 plot_line_idx = i
                 break
         
-        if plot_line_idx is not None:
+        if plot_line_idx is not None and plot_line_idx < len(lines):
             before_plot = '\n'.join(lines[:plot_line_idx])
             
             # Extract x and y variables from plt.plot line
             plot_line = lines[plot_line_idx]
             plot_match = re.search(r'plt\.plot\s*\(\s*([^,]+)\s*,\s*([^,)]+)', plot_line)
             
-            if plot_match:
+            if plot_match and plot_match.groups() and len(plot_match.groups()) >= 2:
                 x_var = plot_match.group(1).strip()
                 y_var = plot_match.group(2).strip()
                 
@@ -541,7 +637,7 @@ def main():
         # Determine output directory
         # If datasets manifest is provided, use its directory (papers/{paper_name}/)
         # Otherwise, use simulation plan file directory
-        if datasets_manifest and "datasets" in datasets_manifest:
+        if datasets_manifest and "datasets" in datasets_manifest and len(datasets_manifest["datasets"]) > 0:
             # Extract paper directory from first dataset path
             first_dataset_path = list(datasets_manifest["datasets"].values())[0]
             dataset_path = Path(first_dataset_path)
@@ -557,9 +653,8 @@ def main():
             else:
                 output_dir = Path(args.plan).parent
         else:
-            # Fallback to simulation plan file directory
-            plan_path = Path(args.plan)
-            output_dir = plan_path.parent
+            # No datasets or empty datasets - use plan file directory
+            output_dir = Path(args.plan).parent
         
         # Save Python code to simulation.py in the determined directory
         python_code = result["python_code"]

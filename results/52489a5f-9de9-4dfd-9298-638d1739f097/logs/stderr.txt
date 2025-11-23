@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py", line 76, in <module>
+    main()
+  File "/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py", line 63, in main
+    diversity = diversity_score([properties]*ensemble_size)  # Simplified diversity computation
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py", line 34, in diversity_score
+    return 1 / (N * (N-1)) * sum(disagreement(c1, c2) for i, c1 in enumerate(classifiers) for j, c2 in enumerate(classifiers) if i < j)
+           ~~^~~~~~~~~~~~~
+ZeroDivisionError: division by zero

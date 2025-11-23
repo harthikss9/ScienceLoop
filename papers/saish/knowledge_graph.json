@@ -1,87 +1,77 @@
 {
   "nodes": [
-    "Parkinson's Disease",
-    "Vocal Parameters",
-    "Machine Learning Algorithms",
-    "Voice Frequency Variations",
-    "Voice Amplitude Variations",
-    "Naive Bayes Algorithm",
-    "Decision Tree Algorithm",
-    "Random Forest Algorithm",
-    "KNN Algorithm",
-    "Logistic Regression Algorithm",
-    "Neurological Health",
-    "Average Vocal Fundamental Frequency",
-    "Maximum Vocal Fundamental Frequency",
-    "Minimum Vocal Fundamental Frequency",
-    "Variation in Fundamental Frequency",
-    "Variation in Amplitude",
-    "Ratio of Noise to Tonal Components",
-    "Health Status of the Subject",
-    "Nonlinear Dynamical Complexity Measures",
-    "Signal Fractal Scaling Exponent",
-    "Nonlinear Measures of Fundamental Frequency Variation"
+    "Parkinson's Disease prediction",
+    "Vocal parameters",
+    "Machine learning algorithms",
+    "Prediction accuracy",
+    "Vocal data quality",
+    "Classification accuracy",
+    "Average vocal fundamental frequency",
+    "Maximum vocal fundamental frequency",
+    "Minimum vocal fundamental frequency",
+    "Variation in fundamental frequency",
+    "Variation in amplitude",
+    "Ratio of noise to tonal components",
+    "Health status",
+    "Nonlinear dynamical complexity measures",
+    "Signal fractal scaling exponent",
+    "Nonlinear measures of fundamental frequency variation",
+    "Naive Bayes model",
+    "Decision Tree model",
+    "Random Forest model",
+    "KNN model",
+    "Logistic Regression model"
   ],
   "edges": [
     {
-      "source": "Voice Frequency Variations",
-      "relation": "are related to",
-      "target": "Parkinson's Disease"
+      "source": "Vocal parameters",
+      "relation": "are used for",
+      "target": "Parkinson's Disease prediction"
     },
     {
-      "source": "Voice Amplitude Variations",
-      "relation": "are related to",
-      "target": "Parkinson's Disease"
+      "source": "Machine learning algorithms",
+      "relation": "evaluate",
+      "target": "Vocal parameters"
     },
     {
-      "source": "Machine Learning Algorithms",
-      "relation": "can predict",
-      "target": "Parkinson's Disease"
+      "source": "Vocal parameters",
+      "relation": "influence",
+      "target": "Prediction accuracy"
     },
     {
-      "source": "Vocal Parameters",
-      "relation": "are analyzed by",
-      "target": "Machine Learning Algorithms"
+      "source": "Prediction accuracy",
+      "relation": "is dependent on",
+      "target": "Vocal data quality"
     },
     {
-      "source": "Vocal Parameters",
-      "relation": "show a relationship with",
-      "target": "Neurological Health"
+      "source": "Machine learning algorithms",
+      "relation": "determine",
+      "target": "Classification accuracy"
     },
     {
-      "source": "Machine Learning Algorithms",
-      "relation": "have varying accuracies",
-      "target": "Parkinson's Disease Prediction"
-    },
-    {
-      "source": "Naive Bayes Algorithm",
-      "relation": "is modeled by",
-      "target": "Bayesian Statistics"
-    },
-    {
-      "source": "Decision Tree Algorithm",
-      "relation": "uses",
-      "target": "Classification Rules"
-    },
-    {
-      "source": "Random Forest Algorithm",
-      "relation": "is used for",
-      "target": "Classification and Regression"
-    },
-    {
-      "source": "KNN Algorithm",
-      "relation": "classifies based on",
-      "target": "Nearest Training Instances"
-    },
-    {
-      "source": "Logistic Regression Algorithm",
+      "source": "Naive Bayes model",
       "relation": "models",
-      "target": "Probabilities of Binary Dependent Variables"
+      "target": "Parkinson's Disease prediction"
     },
     {
-      "source": "KNN Algorithm",
-      "relation": "provided the highest accuracy",
-      "target": "Parkinson's Disease Prediction"
+      "source": "Decision Tree model",
+      "relation": "models",
+      "target": "Parkinson's Disease prediction"
+    },
+    {
+      "source": "Random Forest model",
+      "relation": "models",
+      "target": "Parkinson's Disease prediction"
+    },
+    {
+      "source": "KNN model",
+      "relation": "models",
+      "target": "Parkinson's Disease prediction"
+    },
+    {
+      "source": "Logistic Regression model",
+      "relation": "models",
+      "target": "Parkinson's Disease prediction"
     }
   ]
 }

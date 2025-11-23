@@ -1,32 +1,33 @@
 {
-  "summary": "This paper discusses the use of machine learning algorithms to predict Parkinson's Disease (PD) using vocal parameters. Various algorithms like Naive Bayes, Decision Trees, Random Forest, KNN, and Logistic Regression were tested for their effectiveness in diagnosing early stages of PD based on voice frequency and amplitude variations.",
+  "summary": "This paper explores the use of machine learning algorithms to predict Parkinson's Disease (PD) using vocal parameters. It evaluates various algorithms' performance on a dataset to identify the most accurate one for predicting early stages of PD based on voice features.",
   "formulas": [
-    "Naive Bayes classification based on Bayesian statistics",
-    "Decision Tree rules for classification",
-    "Random Forest for classification and regression",
-    "KNN for classification based on nearest training instances",
-    "Logistic Regression for modeling probabilities of binary dependent variables"
+    "Naive Bayes probability calculation",
+    "Decision Tree rules application",
+    "Random Forest classification and regression",
+    "KNN distance calculation",
+    "Logistic Regression probability modeling"
   ],
   "relationships": [
-    "Voice frequency and amplitude variations are related to the early detection of Parkinson's Disease.",
-    "Machine learning algorithms can predict PD by analyzing vocal parameters, showing a relationship between vocal features and neurological health.",
-    "Different machine learning models have varying accuracies, indicating a dependency on the type of algorithm used for the prediction of PD."
+    "Relationship between vocal parameters and Parkinson's Disease prediction accuracy",
+    "Dependency of algorithm performance on the nature and quality of vocal data",
+    "Interaction between machine learning models and classification accuracy in PD prediction"
   ],
   "variables": [
-    "average vocal fundamental frequency: Average frequency of the voice used as a feature for PD prediction",
-    "maximum vocal fundamental frequency: Maximum frequency of the voice used as a feature for PD prediction",
-    "minimum vocal fundamental frequency: Minimum frequency of the voice used as a feature for PD prediction",
-    "variation in fundamental frequency: Measures of how much the fundamental frequency varies, used as a feature for PD prediction",
-    "variation in amplitude: Measures of how much the voice amplitude varies, used as a feature for PD prediction",
-    "ratio of noise to tonal components: Used to analyze the voice quality and detect PD",
-    "health status of the subject: Binary variable where 1 indicates PD infected and 0 indicates healthy",
-    "nonlinear dynamical complexity measures: Used to analyze the complexity of voice signal for PD prediction",
-    "Signal fractal scaling exponent: A measure of the fractal scaling in voice signals used for PD prediction",
-    "nonlinear measures of fundamental frequency variation: Used to analyze how the fundamental frequency of the voice varies in a nonlinear manner"
+    "average vocal fundamental frequency: A measure of the average pitch of voice used as a feature in PD prediction",
+    "maximum vocal fundamental frequency: The highest pitch recorded, used to analyze voice stability",
+    "minimum vocal fundamental frequency: The lowest pitch recorded, used to analyze voice stability",
+    "variation in fundamental frequency: Measures the fluctuations in voice pitch, important for detecting PD",
+    "variation in amplitude: Measures the fluctuations in voice loudness, used as a feature in PD detection",
+    "ratio of noise to tonal components: Used to determine the quality of voice and its degradation",
+    "health status: Binary indicator where 1 represents PD-infected and 0 represents healthy",
+    "nonlinear dynamical complexity measures: Used to analyze the complexity of voice signal patterns",
+    "Signal fractal scaling exponent: A measure of the fractal dimension of the voice signal",
+    "nonlinear measures of fundamental frequency variation: Used to assess the stability and variability of voice pitch"
   ],
   "key_ideas": [
-    "Machine learning algorithms can effectively predict Parkinson's Disease using vocal parameters, which are non-invasive and cost-effective diagnostic tools.",
-    "The study shows that KNN classifier provided the highest accuracy among the tested algorithms, suggesting its suitability for the proposed system.",
-    "Future improvements include direct application of voice inputs for automatic conversion into predictive parameters and exploring other methods to increase prediction accuracy."
+    "Utilization of vocal parameters as predictive features for Parkinson's Disease",
+    "Comparison and evaluation of various machine learning algorithms to find the most effective one for PD prediction",
+    "Implementation of a predictive model using machine learning to assess the likelihood of Parkinson's based on voice features",
+    "Future work includes direct application of voice inputs for real-time PD prediction and exploring other methods to increase accuracy"
   ]
 }

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py", line 83, in <module>
+    main()
+  File "/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py", line 61, in main
+    pp_20_plus_k = compute_pp_20_plus_k(peptides, k)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py", line 30, in compute_pp_20_plus_k
+    diff = np.abs(peptides[i] - peptides[i + k])
+                  ~~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+TypeError: unsupported operand type(s) for -: 'str' and 'str'

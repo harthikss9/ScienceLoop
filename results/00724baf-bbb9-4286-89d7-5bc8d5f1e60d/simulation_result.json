@@ -1,0 +1,18 @@
+{
+  "status": "success",
+  "run_id": "00724baf-bbb9-4286-89d7-5bc8d5f1e60d",
+  "stdout": "",
+  "stderr": "",
+  "exit_code": 0,
+  "artifacts": [
+    {
+      "filename": "plot_auc_vs_ensemble_size.png",
+      "path": "results/00724baf-bbb9-4286-89d7-5bc8d5f1e60d/artifacts/plot_auc_vs_ensemble_size.png"
+    },
+    {
+      "filename": "dataset1_peptides.csv",
+      "path": "results/00724baf-bbb9-4286-89d7-5bc8d5f1e60d/artifacts/dataset1_peptides.csv"
+    }
+  ],
+  "results_path": "results/00724baf-bbb9-4286-89d7-5bc8d5f1e60d"
+}

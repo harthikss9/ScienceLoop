@@ -1,0 +1,14 @@
+{
+  "status": "success",
+  "run_id": "b1e4c053-9846-44aa-8ca4-3cbeedd773cc",
+  "stdout": "Baseline Accuracies: {\n    \"Naive Bayes\": 0.4745762711864407,\n    \"Decision Tree\": 0.6440677966101694,\n    \"Random Forest\": 0.4745762711864407,\n    \"KNN\": 0.4915254237288136,\n    \"Logistic Regression\": 0.559322033898305\n}\n",
+  "stderr": "",
+  "exit_code": 0,
+  "artifacts": [
+    {
+      "filename": "classification_data.csv",
+      "path": "results/b1e4c053-9846-44aa-8ca4-3cbeedd773cc/artifacts/classification_data.csv"
+    }
+  ],
+  "results_path": "results/b1e4c053-9846-44aa-8ca4-3cbeedd773cc"
+}

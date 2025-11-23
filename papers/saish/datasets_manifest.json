@@ -3,5 +3,5 @@
   "datasets": {
     "classification_data": "papers/saish/datasets/synthetic/classification_data.csv"
   },
-  "reasoning": "The simulation plan explicitly mentions creating a 'synthetic PD voice dataset' with 195 samples (n_samples constant), baseline features (16 vocal parameters), and additional nonlinear features (up to 10). The plan describes generating classification data for Parkinson's Disease prediction with binary labels (0=healthy, 1=PD). The procedure steps detail generating synthetic data with multivariate normal distributions, different class means, and varying feature noise levels. This is clearly a synthetic classification dataset for machine learning evaluation."
+  "reasoning": "The simulation plan explicitly mentions loading or generating a synthetic vocal parameter dataset with 195 samples, 16 vocal features, and binary health status labels (PD=1, healthy=0). The procedure requires baseline NTR values and all 16 vocal features including fundamental frequency measures, amplitude variations, NTR, and nonlinear complexity measures. This is a classification problem requiring synthetic data generation with specific feature characteristics for Parkinson's Disease detection."
 }

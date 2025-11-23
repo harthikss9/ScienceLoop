@@ -1,6 +1,6 @@
 # ScienceLoop - AI4Science Project
 
-An AI4Science project using SpoonOS for understanding scientific papers, generating hypotheses, creating simulation plans, and generating executable code.
+An AI4Science project using SpoonOS for understanding scientific papers, generating hypotheses, creating simulation plans, generating executable code, running simulations, fixing errors, and generating comprehensive reports.
 
 ## Project Structure
 
@@ -8,24 +8,39 @@ An AI4Science project using SpoonOS for understanding scientific papers, generat
 ScienceLoop/
 ├── agents/
 │   ├── PaperUnderstandingAgent.py    # Step 1: Analyzes PDFs and extracts structured data
-│   ├── KnowledgeGraphAgent.py        # Step 2: Builds knowledge graph from Step 1 output
-│   ├── HypothesisAgent.py            # Step 3: Generates testable hypotheses
-│   ├── SimulationPlanAgent.py        # Step 4: Creates simulation-ready plans
-│   ├── CodeGeneratorAgent.py         # Step 5: Generates runnable Python code
-│   └── DatasetAgent.py               # Step 6: Generates/downloads required datasets
+│   ├── KnowledgeGraphAgent.py         # Step 2: Builds knowledge graph from Step 1 output
+│   ├── HypothesisAgent.py             # Step 3: Generates testable hypotheses
+│   ├── SimulationPlanAgent.py         # Step 4: Creates simulation-ready plans
+│   ├── DatasetAgent.py                # Step 5: Generates/downloads required datasets
+│   ├── CodeGeneratorAgent.py         # Step 6: Generates runnable Python code
+│   ├── SimulationRunnerAgent.py       # Step 7: Executes simulations and captures results
+│   ├── ErrorFeedbackAgent.py          # Step 8: Analyzes errors and generates fix requests
+│   └── ReportAgent.py                 # Step 9: Generates comprehensive reports
 ├── tools/
-│   └── pdf_reader_tool.py            # SpoonOS PDF reader tool (BaseTool)
+│   └── pdf_reader_tool.py             # SpoonOS PDF reader tool (BaseTool)
 ├── papers/                            # Place PDF files here
 │   ├── bio paper/                    # Example: Biology paper with all outputs
-│   └── sna paper/                    # Example: Network science paper with all outputs
-├── spoon.json                        # SpoonOS configuration with MCP servers
+│   ├── sna paper/                    # Example: Network science paper with all outputs
+│   ├── physics paper/                # Example: Physics paper with all outputs
+│   ├── mldl/                         # Example: ML/DL paper with all outputs
+│   └── saish/                        # Example: Classification paper with all outputs
+├── results/                           # Simulation run results (auto-generated)
+│   └── {run_id}/
+│       ├── logs/
+│       │   ├── stdout.txt
+│       │   └── stderr.txt
+│       ├── artifacts/                 # Generated plots, CSV files, etc.
+│       ├── error_report.json          # (or simulation_result.json)
+│       └── fix_request.json           # (if error fixing was performed)
+├── spoon.json                        # SpoonOS configuration
 ├── requirements.txt                  # Python dependencies
-└── workflow.sh                       # Complete workflow script
+├── AGENT_INPUTS.md                   # Complete agent inputs reference
+└── README.md                         # This file
 ```
 
 ## Setup
 
-1. Create and activate virtual environment:
+1. **Create and activate virtual environment:**
 ```bash
 # macOS/Linux
 python3 -m venv spoon-env
@@ -36,12 +51,12 @@ python -m venv spoon-env
 .\spoon-env\Scripts\Activate.ps1
 ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Configure API keys in `.env` file:
+3. **Configure API keys in `.env` file:**
 
 Create a `.env` file in the project root:
 ```bash
@@ -61,40 +76,58 @@ ANTHROPIC_MODEL=claude-sonnet-4-5-20250929
 - **SimulationPlanAgent**: Uses `claude-sonnet-4-5-20250929` (via `ANTHROPIC_MODEL`)
 - **CodeGeneratorAgent**: Uses `gpt-4o` (via `OPENAI_MODEL`, best for code generation)
 - **DatasetAgent**: Uses `claude-sonnet-4-5-20250929` (via `ANTHROPIC_MODEL`)
+- **SimulationRunnerAgent**: Pure Python (no LLM)
+- **ErrorFeedbackAgent**: Uses `gpt-4o` (via `OPENAI_MODEL`)
+- **ReportAgent**: Uses `claude-sonnet-4-5-20250929` (via `ANTHROPIC_MODEL`)
 
-4. Place your PDF files in the `papers/` directory.
+4. **Place your PDF files in the `papers/` directory.**
 
-## MCP Integration
+## Complete Pipeline Overview
 
-The project includes MCP (Model Context Protocol) servers for enhanced tool access:
+The ScienceLoop pipeline consists of **9 agents** working in sequence:
 
-- **filesystem**: File operations (`readFile`, `writeFile`, `mkdir`, `list`)
-- **process**: Process execution (`run`)
-- **shell**: Shell commands (`run`)
+### **Phase 1: Paper Analysis (Steps 1-4)**
+1. **PaperUnderstandingAgent**: Extracts formulas, variables, relationships, and key ideas from PDFs
+2. **KnowledgeGraphAgent**: Creates a scientific knowledge graph with nodes and edges
+3. **HypothesisAgent**: Generates testable scientific hypotheses
+4. **SimulationPlanAgent**: Creates precise, executable simulation plans
 
-These are configured in `spoon.json` and available to all agents through the Spoon MCP protocol.
+### **Phase 2: Code & Data Preparation (Steps 5-6)**
+5. **DatasetAgent**: Automatically generates/downloads required datasets
+6. **CodeGeneratorAgent**: Converts simulation plans into runnable Python scripts
 
-## Complete Workflow
+### **Phase 3: Simulation Execution (Step 7)**
+7. **SimulationRunnerAgent**: Executes simulation scripts, captures outputs, stores artifacts
 
-The ScienceLoop pipeline consists of 6 agents that work together:
+### **Phase 4: Error Fixing (Step 8 - Manual Loop)**
+8. **ErrorFeedbackAgent**: Analyzes errors and generates fix requests for code regeneration
 
-### Step 1: Paper Understanding
-Extracts formulas, variables, relationships, and key ideas from PDFs.
+### **Phase 5: Report Generation (Step 9)**
+9. **ReportAgent**: Generates comprehensive reports comparing expected vs actual outcomes
 
-### Step 2: Knowledge Graph Building
-Creates a scientific knowledge graph with nodes and edges.
+## Complete Pipeline Flow
 
-### Step 3: Hypothesis Generation
-Generates testable scientific hypotheses using Claude 4.5 Sonnet.
-
-### Step 4: Simulation Planning
-Creates precise, executable simulation plans.
-
-### Step 5: Code Generation
-Converts simulation plans into runnable Python scripts using GPT-4o.
-
-### Step 6: Dataset Generation
-Automatically generates/downloads required datasets (graphs, ML data, bio structures).
+```
+PDF
+  ↓
+PaperUnderstandingAgent → understand.json
+  ↓
+KnowledgeGraphAgent → knowledge_graph.json
+  ↓
+HypothesisAgent → hypothesis.json
+  ↓
+SimulationPlanAgent → simulation_plan.json
+  ↓                    ↓
+DatasetAgent      CodeGeneratorAgent
+  ↓                    ↓
+datasets_manifest.json  simulation.py
+  ↓                    ↓
+SimulationRunnerAgent → error_report.json / simulation_result.json
+  ↓ (if error)
+ErrorFeedbackAgent → fix_request.json → CodeGeneratorAgent (regenerate)
+  ↓ (repeat until success)
+ReportAgent → report.json, report.md
+```
 
 ## Usage
 
@@ -106,74 +139,232 @@ source spoon-env/bin/activate  # macOS/Linux
 .\spoon-env\Scripts\Activate.ps1  # Windows PowerShell
 ```
 
-### Complete Pipeline (All 6 Agents)
+### Complete Pipeline Example
 
-Run all agents in sequence for a paper:
+For a paper in `papers/saish/`:
 
-```bash
-# One-liner (all at once)
-source spoon-env/bin/activate && \
-python agents/PaperUnderstandingAgent.py --pdf "papers/your-paper/paper.pdf" >/dev/null 2>&1 && \
-python agents/KnowledgeGraphAgent.py --input "papers/your-paper/understand.json" >/dev/null 2>&1 && \
-python agents/HypothesisAgent.py --input "papers/your-paper/understand.json" --kg "papers/your-paper/knowledge_graph.json" >/dev/null 2>&1 && \
-python agents/SimulationPlanAgent.py --hypothesis "papers/your-paper/hypothesis.json" --paper "papers/your-paper/understand.json" --kg "papers/your-paper/knowledge_graph.json" >/dev/null 2>&1 && \
-python agents/CodeGeneratorAgent.py --plan "papers/your-paper/simulation_plan.json" >/dev/null 2>&1 && \
-python agents/DatasetAgent.py --plan "papers/your-paper/simulation_plan.json" && \
-echo "✅ All done! Check papers/your-paper/ for all outputs"
-```
-
-### Step-by-Step Execution
+#### **Phase 1: Paper Analysis**
 
 ```bash
-# Activate virtual environment
-source spoon-env/bin/activate
-
 # Step 1: Paper Understanding
-python agents/PaperUnderstandingAgent.py --pdf "papers/your-paper/paper.pdf"
-# Output: papers/your-paper/understand.json
+python agents/PaperUnderstandingAgent.py --pdf "papers/saish/saish paper.pdf"
+# Output: papers/saish/understand.json
 
 # Step 2: Knowledge Graph
-python agents/KnowledgeGraphAgent.py --input "papers/your-paper/understand.json"
-# Output: papers/your-paper/knowledge_graph.json
+python agents/KnowledgeGraphAgent.py --input "papers/saish/understand.json"
+# Output: papers/saish/knowledge_graph.json
 
 # Step 3: Hypothesis Generation
-python agents/HypothesisAgent.py --input "papers/your-paper/understand.json" --kg "papers/your-paper/knowledge_graph.json"
-# Output: papers/your-paper/hypothesis.json
+python agents/HypothesisAgent.py --input "papers/saish/understand.json" --kg "papers/saish/knowledge_graph.json"
+# Output: papers/saish/hypothesis.json
 
 # Step 4: Simulation Plan
-python agents/SimulationPlanAgent.py --hypothesis "papers/your-paper/hypothesis.json" --paper "papers/your-paper/understand.json" --kg "papers/your-paper/knowledge_graph.json"
-# Output: papers/your-paper/simulation_plan.json
-
-# Step 5: Code Generation
-python agents/CodeGeneratorAgent.py --plan "papers/your-paper/simulation_plan.json"
-# Output: papers/your-paper/simulation.py
-
-# Step 6: Dataset Generation
-python agents/DatasetAgent.py --plan "papers/your-paper/simulation_plan.json"
-# Output: papers/your-paper/datasets/ and papers/your-paper/datasets_manifest.json
+python agents/SimulationPlanAgent.py --hypothesis "papers/saish/hypothesis.json" --paper "papers/saish/understand.json" --kg "papers/saish/knowledge_graph.json"
+# Output: papers/saish/simulation_plan.json
 ```
 
-### Using SpoonOS CLI
+#### **Phase 2: Code & Data Preparation**
 
 ```bash
-# Step 1
-spoon run PaperUnderstandingAgent --pdf papers/your-paper/paper.pdf
+# Step 5: Dataset Generation
+python agents/DatasetAgent.py --plan "papers/saish/simulation_plan.json"
+# Output: papers/saish/datasets_manifest.json + datasets/
 
-# Step 2
-spoon run KnowledgeGraphAgent --input papers/your-paper/understand.json
-
-# Step 3
-spoon run HypothesisAgent --input papers/your-paper/understand.json --kg papers/your-paper/knowledge_graph.json
-
-# Step 4
-spoon run SimulationPlanAgent --hypothesis papers/your-paper/hypothesis.json --paper papers/your-paper/understand.json --kg papers/your-paper/knowledge_graph.json
-
-# Step 5
-spoon run CodeGeneratorAgent --plan papers/your-paper/simulation_plan.json
-
-# Step 6
-spoon run DatasetAgent --plan papers/your-paper/simulation_plan.json
+# Step 6: Code Generation (with datasets)
+python agents/CodeGeneratorAgent.py --plan "papers/saish/simulation_plan.json" --datasets "papers/saish/datasets_manifest.json"
+# Output: papers/saish/simulation.py
 ```
+
+#### **Phase 3: Simulation Execution**
+
+```bash
+# Step 7: Run Simulation
+python agents/SimulationRunnerAgent.py \
+  --python-file "papers/saish/simulation.py" \
+  --datasets "papers/saish/datasets_manifest.json" \
+  --simulation-plan "papers/saish/simulation_plan.json" \
+  --timeout 600
+# Output: results/{run_id}/error_report.json or simulation_result.json
+```
+
+#### **Phase 4: Error Fixing Loop (Manual - Repeat Until Success)**
+
+If the simulation has errors, fix them manually:
+
+```bash
+# Get latest error report
+LATEST_RESULT=$(ls -td results/*/error_report.json 2>/dev/null | head -1)
+echo "Error report: $LATEST_RESULT"
+
+# Generate fix request
+python agents/ErrorFeedbackAgent.py \
+  --error-report "$LATEST_RESULT" \
+  --simulation-plan "papers/saish/simulation_plan.json" \
+  --original-code "papers/saish/simulation.py" \
+  --output "$(dirname $LATEST_RESULT)/fix_request.json"
+
+# Regenerate code with fixes
+TEMP_PLAN=$(python3 -c "
+import json
+import tempfile
+f = open('$(dirname $LATEST_RESULT)/fix_request.json')
+d = json.load(f)
+p = d['simulation_plan'].copy()
+p.update({
+    '_fix_instructions': d['fix_instructions'],
+    '_error_context': d['error_context'],
+    '_error_summary': d['error_summary'],
+    '_explanation': d['explanation']
+})
+t = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+json.dump(p, t, indent=2)
+t.close()
+print(t.name)
+")
+python agents/CodeGeneratorAgent.py --plan "$TEMP_PLAN" --datasets "papers/saish/datasets_manifest.json"
+rm "$TEMP_PLAN"
+
+# Re-run simulation (repeat Step 7)
+python agents/SimulationRunnerAgent.py \
+  --python-file "papers/saish/simulation.py" \
+  --datasets "papers/saish/datasets_manifest.json" \
+  --simulation-plan "papers/saish/simulation_plan.json" \
+  --timeout 600
+```
+
+**Repeat Phase 4 until simulation succeeds (status: "success")**
+
+#### **Phase 5: Report Generation (Only After Success)**
+
+```bash
+# Step 9: Generate Report
+LATEST_RESULT=$(ls -td results/*/simulation_result.json 2>/dev/null | head -1)
+python agents/ReportAgent.py \
+  --paper-understanding "papers/saish/understand.json" \
+  --knowledge-graph "papers/saish/knowledge_graph.json" \
+  --hypothesis "papers/saish/hypothesis.json" \
+  --simulation-plan "papers/saish/simulation_plan.json" \
+  --simulation-result "$LATEST_RESULT" \
+  --output "papers/saish/report.json" \
+  --markdown-output "papers/saish/report.md"
+# Output: papers/saish/report.json, papers/saish/report.md
+```
+
+## Agent Inputs Reference
+
+### Quick Reference Table
+
+| Agent | Required Inputs | Optional Inputs |
+|-------|----------------|-----------------|
+| **PaperUnderstandingAgent** | `--pdf` | None |
+| **KnowledgeGraphAgent** | None (uses `--input` or stdin) | `--input` |
+| **HypothesisAgent** | `--input`, `--kg` | None |
+| **SimulationPlanAgent** | `--hypothesis`, `--paper`, `--kg` | None |
+| **DatasetAgent** | `--plan` | None |
+| **CodeGeneratorAgent** | `--plan` | `--datasets` |
+| **SimulationRunnerAgent** | `--python-file` | `--datasets`, `--workdir`, `--timeout`, `--auto-fix`, `--simulation-plan` |
+| **ErrorFeedbackAgent** | `--error-report`, `--simulation-plan` | `--original-code`, `--output` |
+| **ReportAgent** | `--paper-understanding`, `--knowledge-graph`, `--hypothesis`, `--simulation-plan`, `--simulation-result` | `--error-history`, `--output`, `--markdown-output` |
+
+### Detailed Agent Specifications
+
+#### 1. **PaperUnderstandingAgent**
+- **Input**: `--pdf` (string): Path to PDF file
+- **Output**: `understand.json` (saved in PDF's directory)
+- **Model**: GPT-4 Turbo
+- **Purpose**: Extracts structured information from scientific PDFs
+
+#### 2. **KnowledgeGraphAgent**
+- **Input**: `--input` (string, optional): Path to understand.json (or reads from stdin)
+- **Output**: `knowledge_graph.json` (saved in same directory)
+- **Model**: GPT-4 Turbo
+- **Purpose**: Builds scientific knowledge graph
+
+#### 3. **HypothesisAgent**
+- **Input**: 
+  - `--input` (string): Path to understand.json
+  - `--kg` (string): Path to knowledge_graph.json
+- **Output**: `hypothesis.json` (saved in same directory)
+- **Model**: Claude 4.5 Sonnet
+- **Purpose**: Generates testable scientific hypotheses
+
+#### 4. **SimulationPlanAgent**
+- **Input**:
+  - `--hypothesis` (string): Path to hypothesis.json
+  - `--paper` (string): Path to understand.json
+  - `--kg` (string): Path to knowledge_graph.json
+- **Output**: `simulation_plan.json` (saved in same directory)
+- **Model**: Claude 4.5 Sonnet
+- **Purpose**: Creates executable simulation plans
+
+#### 5. **DatasetAgent**
+- **Input**: `--plan` (string): Path to simulation_plan.json
+- **Output**: 
+  - `datasets_manifest.json` (saved in same directory)
+  - Dataset files in `datasets/` subdirectory
+- **Model**: Claude 4.5 Sonnet
+- **Purpose**: Generates/downloads required datasets
+
+#### 6. **CodeGeneratorAgent**
+- **Input**:
+  - `--plan` (string): Path to simulation_plan.json
+  - `--datasets` (string, optional): Path to datasets_manifest.json (recommended)
+- **Output**: `simulation.py` (saved in same directory)
+- **Model**: GPT-4o
+- **Purpose**: Generates runnable Python simulation code
+- **Features**:
+  - Intelligently infers required libraries
+  - Generates complete, standalone scripts
+  - Handles error fix instructions from ErrorFeedbackAgent
+  - Converts dataset paths to be relative to script directory
+  - Validates code before returning
+
+#### 7. **SimulationRunnerAgent**
+- **Input**:
+  - `--python-file` (string): Path to simulation.py
+  - `--datasets` (string, optional): Path to datasets_manifest.json
+  - `--workdir` (string, optional): Working directory (default: parent of python-file)
+  - `--timeout` (number, optional): Timeout in seconds (default: 600)
+  - `--auto-fix` (boolean, optional): Auto-fix errors (requires --simulation-plan)
+  - `--simulation-plan` (string, optional): Required if --auto-fix is used
+- **Output**: 
+  - `results/{run_id}/error_report.json` (on error) or `simulation_result.json` (on success)
+  - `results/{run_id}/logs/stdout.txt`
+  - `results/{run_id}/logs/stderr.txt`
+  - `results/{run_id}/artifacts/*` (plots, CSV files, etc.)
+- **Model**: Pure Python (no LLM)
+- **Purpose**: Executes simulations and captures all outputs
+
+#### 8. **ErrorFeedbackAgent**
+- **Input**:
+  - `--error-report` (string): Path to error_report.json from SimulationRunnerAgent
+  - `--simulation-plan` (string): Path to simulation_plan.json
+  - `--original-code` (string, optional): Path to simulation.py
+  - `--output` (string, optional): Path to save fix_request.json
+- **Output**: `fix_request.json` (saved to specified path or printed to stdout)
+- **Model**: GPT-4o
+- **Purpose**: Analyzes errors and generates structured fix requests
+- **Features**:
+  - Detects specific error types (FileNotFoundError, ValueError, dimension mismatches)
+  - Provides actionable fix instructions
+  - Includes error context and explanation
+
+#### 9. **ReportAgent**
+- **Input**:
+  - `--paper-understanding` (string): Path to understand.json
+  - `--knowledge-graph` (string): Path to knowledge_graph.json
+  - `--hypothesis` (string): Path to hypothesis.json
+  - `--simulation-plan` (string): Path to simulation_plan.json
+  - `--simulation-result` (string): Path to error_report.json or simulation_result.json
+  - `--error-history` (string, optional): Path to JSON list of error reports
+  - `--output` (string, optional): Path to save report.json
+  - `--markdown-output` (string, optional): Path to save report.md
+- **Output**: 
+  - `report.json` (machine-readable summary)
+  - `report.md` (human-readable report)
+- **Model**: Claude 4.5 Sonnet
+- **Purpose**: Generates comprehensive analysis reports
+- **Note**: Only run after simulation succeeds (status: "success")
 
 ## Output Files
 
@@ -185,147 +376,30 @@ papers/your-paper/
 ├── understand.json              # Step 1: Paper understanding
 ├── knowledge_graph.json         # Step 2: Knowledge graph
 ├── hypothesis.json              # Step 3: Hypothesis
-├── simulation_plan.json          # Step 4: Simulation plan
-├── simulation.py                # Step 5: Generated Python code
-├── datasets_manifest.json       # Step 6: Dataset manifest
-└── datasets/                    # Step 6: Generated datasets
-    ├── barabasi_albert_n100_m3.edgelist
-    ├── watts_strogatz_n100_k6_p0.30.edgelist
-    ├── erdos_renyi_n100_p0.01.edgelist
-    ├── karate.edgelist
-    └── dolphins.edgelist
+├── simulation_plan.json         # Step 4: Simulation plan
+├── datasets_manifest.json       # Step 5: Dataset manifest
+├── datasets/                    # Step 5: Generated datasets
+│   ├── synthetic/
+│   │   └── classification_data.csv
+│   └── ...
+├── simulation.py               # Step 6: Generated Python code
+└── report.json                 # Step 9: Report (JSON)
+└── report.md                   # Step 9: Report (Markdown)
+
+results/{run_id}/
+├── logs/
+│   ├── stdout.txt
+│   └── stderr.txt
+├── artifacts/                  # Generated plots, CSV files, etc.
+│   ├── plot1.png
+│   └── ...
+├── error_report.json           # (on error) or simulation_result.json (on success)
+└── fix_request.json            # (if error fixing was performed)
 ```
-
-## Agent Details
-
-### 1. PaperUnderstandingAgent
-
-**Purpose**: Analyzes scientific PDFs to extract structured information.
-
-**Input**: PDF file path
-
-**Output**: JSON with:
-- `summary`: Brief scientific summary
-- `formulas`: List of equations/formulas
-- `relationships`: Scientific relationships
-- `variables`: Variables with descriptions
-- `key_ideas`: Main scientific concepts
-
-**Model**: GPT-4 Turbo (OpenAI)
-
-**Features**:
-- Raw PDF text extraction (no manual parsing)
-- LLM understands formulas, variables, relationships automatically
-- Domain-agnostic (works for any scientific field)
-- Saves output as `understand.json` in PDF's directory
-
-### 2. KnowledgeGraphAgent
-
-**Purpose**: Builds a scientific knowledge graph from paper understanding.
-
-**Input**: `understand.json` from Step 1
-
-**Output**: JSON with:
-- `nodes`: List of scientific entities
-- `edges`: Relationships between entities (source, relation, target)
-
-**Model**: GPT-4 Turbo (OpenAI)
-
-**Features**:
-- Extracts entities and relationships
-- Creates directional knowledge graph
-- Descriptive entity names (e.g., "Temperature" not "T")
-- Saves output as `knowledge_graph.json` in same directory
-
-### 3. HypothesisAgent
-
-**Purpose**: Generates testable scientific hypotheses.
-
-**Input**: 
-- `understand.json` (Step 1 output)
-- `knowledge_graph.json` (Step 2 output)
-
-**Output**: JSON with:
-- `hypothesis`: Clear, testable hypothesis statement
-- `justification`: Why this hypothesis follows from the paper
-
-**Model**: Claude 4.5 Sonnet (Anthropic)
-
-**Features**:
-- Grounded strictly in paper content (no hallucination)
-- Specific and measurable
-- Simulation-friendly
-- Works for all scientific fields
-
-### 4. SimulationPlanAgent
-
-**Purpose**: Creates precise, executable simulation plans.
-
-**Input**:
-- `hypothesis.json` (Step 3 output)
-- `understand.json` (Step 1 output)
-- `knowledge_graph.json` (Step 2 output)
-
-**Output**: JSON with:
-- `simulation_equations`: Equations to implement
-- `constants_required`: Constants with values/ranges
-- `variables_to_vary`: Parameters to sweep
-- `procedure_steps`: Step-by-step implementation plan
-- `expected_outcomes`: What patterns to expect
-
-**Model**: Claude 4.5 Sonnet (Anthropic)
-
-**Features**:
-- Executable in Python (NumPy/SciPy/Matplotlib)
-- No ambiguity or guesswork
-- Domain-agnostic
-
-### 5. CodeGeneratorAgent
-
-**Purpose**: Converts simulation plans into runnable Python code.
-
-**Input**: `simulation_plan.json` (Step 4 output)
-
-**Output**: 
-- JSON with `python_code` field
-- Saves `simulation.py` file
-
-**Model**: GPT-4o (OpenAI, best for code generation)
-
-**Features**:
-- Intelligently infers required libraries (numpy, scipy, matplotlib, networkx, etc.)
-- Generates complete, standalone Python scripts
-- No placeholders or pseudocode
-- Modular, readable code with docstrings
-- Domain-agnostic
-
-### 6. DatasetAgent
-
-**Purpose**: Generates/downloads datasets required for simulation code.
-
-**Input**: `simulation_plan.json` (Step 4 output)
-
-**Output**: 
-- JSON with `dataset_type` and `datasets` (name -> path mapping)
-- Saves `datasets_manifest.json`
-- Generates/downloads actual dataset files
-
-**Model**: Claude 4.5 Sonnet (Anthropic)
-
-**Features**:
-- Auto-detects dataset type (graph, ml, bio_structures, none)
-- Generates graph datasets:
-  - Barabási–Albert (scale-free)
-  - Watts–Strogatz (small-world)
-  - Erdős–Rényi (random)
-  - Real-world networks (karate, dolphins)
-- Downloads PDB files for bio structures
-- Creates ML dataset placeholders
-- Saves all datasets to `datasets/` directory
 
 ## Output Formats
 
-### Step 1: understand.json
+### understand.json
 ```json
 {
   "summary": "Brief scientific summary",
@@ -336,7 +410,7 @@ papers/your-paper/
 }
 ```
 
-### Step 2: knowledge_graph.json
+### knowledge_graph.json
 ```json
 {
   "nodes": ["entity1", "entity2", "entity3"],
@@ -350,7 +424,7 @@ papers/your-paper/
 }
 ```
 
-### Step 3: hypothesis.json
+### hypothesis.json
 ```json
 {
   "hypothesis": "A clear, testable scientific hypothesis statement",
@@ -358,7 +432,7 @@ papers/your-paper/
 }
 ```
 
-### Step 4: simulation_plan.json
+### simulation_plan.json
 ```json
 {
   "simulation_equations": ["equation1", "equation2"],
@@ -382,16 +456,7 @@ papers/your-paper/
 }
 ```
 
-### Step 5: simulation.py
-Complete, runnable Python script with:
-- All necessary imports
-- Constant initialization
-- Functions for equations
-- Variable sweeps
-- Plotting functions
-- Main execution function
-
-### Step 6: datasets_manifest.json
+### datasets_manifest.json
 ```json
 {
   "dataset_type": "graph",
@@ -403,38 +468,154 @@ Complete, runnable Python script with:
 }
 ```
 
+### error_report.json / simulation_result.json
+```json
+{
+  "status": "error" | "success",
+  "run_id": "<uuid>",
+  "stdout": "<full text log>",
+  "stderr": "<full text log or empty>",
+  "exit_code": <int>,
+  "artifacts": [
+    {
+      "filename": "plot1.png",
+      "path": "results/<run_id>/artifacts/plot1.png"
+    }
+  ],
+  "results_path": "results/<run_id>",
+  "error_summary": "<if error>" (optional)
+}
+```
+
+### fix_request.json
+```json
+{
+  "needs_regeneration": true,
+  "error_context": "<exact traceback>",
+  "explanation": "<why the error occurred>",
+  "fix_instructions": [
+    "Correct variable X",
+    "Import Y library",
+    "Adjust dataset path to Z"
+  ],
+  "simulation_plan": { ... }
+}
+```
+
+### report.json
+```json
+{
+  "success": true | false | "partial",
+  "reason": "<one-paragraph explanation>",
+  "matched_expectations": [
+    "<which parts of expected_outcomes were clearly observed>"
+  ],
+  "unmet_expectations": [
+    "<which expected behaviors were not clearly observed or contradicted>"
+  ],
+  "key_observations": [
+    "<short bullet strings for main findings>"
+  ],
+  "recommendations": [
+    "<concrete next actions for future runs or code changes>"
+  ]
+}
+```
+
 ## Example Workflows
 
-### Biology Paper
+### Complete Pipeline for Biology Paper
 ```bash
+# Phase 1: Analysis
 python agents/PaperUnderstandingAgent.py --pdf "papers/bio paper/scalley97A.pdf"
 python agents/KnowledgeGraphAgent.py --input "papers/bio paper/understand.json"
 python agents/HypothesisAgent.py --input "papers/bio paper/understand.json" --kg "papers/bio paper/knowledge_graph.json"
 python agents/SimulationPlanAgent.py --hypothesis "papers/bio paper/hypothesis.json" --paper "papers/bio paper/understand.json" --kg "papers/bio paper/knowledge_graph.json"
-python agents/CodeGeneratorAgent.py --plan "papers/bio paper/simulation_plan.json"
+
+# Phase 2: Preparation
 python agents/DatasetAgent.py --plan "papers/bio paper/simulation_plan.json"
+python agents/CodeGeneratorAgent.py --plan "papers/bio paper/simulation_plan.json" --datasets "papers/bio paper/datasets_manifest.json"
+
+# Phase 3: Execution
+python agents/SimulationRunnerAgent.py --python-file "papers/bio paper/simulation.py" --datasets "papers/bio paper/datasets_manifest.json" --simulation-plan "papers/bio paper/simulation_plan.json"
+
+# Phase 4: Error Fixing (if needed - repeat until success)
+# ... (see manual error fixing loop above)
+
+# Phase 5: Report (only after success)
+LATEST_RESULT=$(ls -td results/*/simulation_result.json 2>/dev/null | head -1)
+python agents/ReportAgent.py --paper-understanding "papers/bio paper/understand.json" --knowledge-graph "papers/bio paper/knowledge_graph.json" --hypothesis "papers/bio paper/hypothesis.json" --simulation-plan "papers/bio paper/simulation_plan.json" --simulation-result "$LATEST_RESULT" --output "papers/bio paper/report.json" --markdown-output "papers/bio paper/report.md"
 ```
 
-### Network Science Paper
-```bash
-python agents/PaperUnderstandingAgent.py --pdf "papers/sna paper/Complexity - 2020 - Zhao - Ranking Influential Nodes in Complex Networks with Information Entropy Method.pdf"
-python agents/KnowledgeGraphAgent.py --input "papers/sna paper/understand.json"
-python agents/HypothesisAgent.py --input "papers/sna paper/understand.json" --kg "papers/sna paper/knowledge_graph.json"
-python agents/SimulationPlanAgent.py --hypothesis "papers/sna paper/hypothesis.json" --paper "papers/sna paper/understand.json" --kg "papers/sna paper/knowledge_graph.json"
-python agents/CodeGeneratorAgent.py --plan "papers/sna paper/simulation_plan.json"
-python agents/DatasetAgent.py --plan "papers/sna paper/simulation_plan.json"
-```
+## Error Handling
 
-## Running Generated Simulations
+### Manual Error Fixing Loop
 
-After completing all 6 steps, you can run the generated simulation:
+When `SimulationRunnerAgent` reports an error:
 
-```bash
-cd papers/your-paper/
-python simulation.py
-```
+1. **Get the latest error report:**
+   ```bash
+   LATEST_RESULT=$(ls -td results/*/error_report.json 2>/dev/null | head -1)
+   ```
 
-The simulation code will automatically use the datasets from the `datasets/` directory.
+2. **Generate fix request:**
+   ```bash
+   python agents/ErrorFeedbackAgent.py \
+     --error-report "$LATEST_RESULT" \
+     --simulation-plan "papers/your-paper/simulation_plan.json" \
+     --original-code "papers/your-paper/simulation.py" \
+     --output "$(dirname $LATEST_RESULT)/fix_request.json"
+   ```
+
+3. **Regenerate code with fixes:**
+   ```bash
+   TEMP_PLAN=$(python3 -c "
+   import json
+   import tempfile
+   f = open('$(dirname $LATEST_RESULT)/fix_request.json')
+   d = json.load(f)
+   p = d['simulation_plan'].copy()
+   p.update({
+       '_fix_instructions': d['fix_instructions'],
+       '_error_context': d['error_context'],
+       '_error_summary': d['error_summary'],
+       '_explanation': d['explanation']
+   })
+   t = tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False)
+   json.dump(p, t, indent=2)
+   t.close()
+   print(t.name)
+   ")
+   python agents/CodeGeneratorAgent.py --plan "$TEMP_PLAN" --datasets "papers/your-paper/datasets_manifest.json"
+   rm "$TEMP_PLAN"
+   ```
+
+4. **Re-run simulation:**
+   ```bash
+   python agents/SimulationRunnerAgent.py \
+     --python-file "papers/your-paper/simulation.py" \
+     --datasets "papers/your-paper/datasets_manifest.json" \
+     --simulation-plan "papers/your-paper/simulation_plan.json"
+   ```
+
+5. **Repeat steps 1-4 until status is "success"**
+
+### Common Errors & Solutions
+
+1. **`FileNotFoundError: [Errno 2] No such file or directory: 'papers/.../datasets/...'`**
+   - **Solution**: `CodeGeneratorAgent` now converts dataset paths to be relative to the script's directory. Ensure `--datasets` argument is provided.
+
+2. **`ValueError: x and y must have same first dimension`**
+   - **Solution**: `ErrorFeedbackAgent` detects this and provides specific fix instructions. Regenerate code with the fix request.
+
+3. **`ModuleNotFoundError: No module named 'X'`**
+   - **Solution**: Install missing dependencies: `pip install -r requirements.txt`
+
+4. **Simulation hangs or times out**
+   - **Solution**: Increase `--timeout` value or optimize simulation code (reduce parameter ranges, add progress output)
+
+5. **Report generation fails**
+   - **Solution**: Ensure simulation completed successfully first (status: "success" in simulation_result.json)
 
 ## Dependencies
 
@@ -442,21 +623,41 @@ See `requirements.txt` for full list. Key dependencies:
 
 - `spoon-ai-sdk>=0.3.0` - SpoonOS core framework
 - `spoon-toolkits>=0.2.0` - Extended toolkits
-- `PyPDF2>=3.0.0` - PDF reading
+- `pypdf>=3.0.0` - PDF reading
 - `openai>=1.0.0` - OpenAI API client
 - `anthropic>=0.34.0` - Anthropic/Claude API client
 - `networkx>=3.0` - Graph generation
 - `numpy>=1.24.0` - Numerical computations
+- `scipy>=1.10.0` - Scientific computing
+- `matplotlib>=3.7.0` - Plotting
+- `scikit-learn>=1.3.0` - Machine learning
+- `pandas` - Data manipulation
 - `requests>=2.31.0` - HTTP requests
 - `python-dotenv>=1.0.0` - Environment variable management
 
-## Notes
+## Key Features
 
 - **Dynamic File Saving**: All outputs are saved in the same directory as the input PDF
 - **Domain Agnostic**: Works for biology, chemistry, physics, computer science, ML, algorithms, systems, etc.
 - **Model Selection**: Uses GPT-4 Turbo for understanding/graphs, Claude 4.5 Sonnet for reasoning/planning, GPT-4o for code generation
+- **Error Handling**: Robust error detection, analysis, and automated code regeneration
+- **Code Validation**: Pre-generation validation to catch common errors before runtime
+- **Intelligent Plotting**: CodeGeneratorAgent intelligently decides when to generate plots based on simulation plan
+- **Comprehensive Reports**: Detailed analysis comparing expected vs actual outcomes
+
+## Notes
+
 - **Context Windows**: Agents handle large PDFs with truncation and model fallbacks
-- **Error Handling**: Robust error handling with model fallbacks and validation
+- **Error Recovery**: Manual error-fixing loop ensures robust code generation
+- **Path Handling**: All dataset paths are automatically converted to be relative to script execution directory
+- **Plot Saving**: Generated code uses `plt.savefig()` and `plt.close()` instead of `plt.show()` to prevent blocking
+- **Non-Interactive Backend**: Matplotlib uses 'Agg' backend for non-interactive plotting
+
+## Additional Resources
+
+- **`AGENT_INPUTS.md`**: Complete reference for all agent inputs and usage
+- **`RUN_SAISH_PAPER.md`**: Step-by-step guide for running complete pipeline
+- **`MANUAL_ERROR_FIX.md`**: Detailed error fixing instructions
 
 ## License
 

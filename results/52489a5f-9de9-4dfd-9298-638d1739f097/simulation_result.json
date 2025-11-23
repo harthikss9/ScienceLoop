@@ -1,0 +1,27 @@
+{
+  "status": "error",
+  "run_id": "52489a5f-9de9-4dfd-9298-638d1739f097",
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py\", line 76, in <module>\n    main()\n  File \"/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py\", line 63, in main\n    diversity = diversity_score([properties]*ensemble_size)  # Simplified diversity computation\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/harthiksonpole/ScienceLoop/papers/mldl/simulation.py\", line 34, in diversity_score\n    return 1 / (N * (N-1)) * sum(disagreement(c1, c2) for i, c1 in enumerate(classifiers) for j, c2 in enumerate(classifiers) if i < j)\n           ~~^~~~~~~~~~~~~\nZeroDivisionError: division by zero\n",
+  "exit_code": 1,
+  "error_summary": "ZeroDivisionError: division by zero",
+  "artifacts": [
+    {
+      "filename": "report.json",
+      "path": "results/52489a5f-9de9-4dfd-9298-638d1739f097/artifacts/report.json"
+    },
+    {
+      "filename": "plot_auc_vs_ensemble_size.png",
+      "path": "results/52489a5f-9de9-4dfd-9298-638d1739f097/artifacts/plot_auc_vs_ensemble_size.png"
+    },
+    {
+      "filename": "results.csv",
+      "path": "results/52489a5f-9de9-4dfd-9298-638d1739f097/artifacts/results.csv"
+    },
+    {
+      "filename": "dataset1_peptides.csv",
+      "path": "results/52489a5f-9de9-4dfd-9298-638d1739f097/artifacts/dataset1_peptides.csv"
+    }
+  ],
+  "results_path": "results/52489a5f-9de9-4dfd-9298-638d1739f097"
+}
