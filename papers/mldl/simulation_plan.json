@@ -1,0 +1,84 @@
+{
+  "simulation_equations": [
+    "Pp(20+k) = (1 / (M - k)) * sum_{a=1}^{M-k} [val(p, A_a) - val(p, A_{a+k})]",
+    "EUC = 1 - AUC",
+    "Feature_vector_autocorr = [Pp(20+1), Pp(20+2), ..., Pp(20+K)] for each physicochemical property p",
+    "Feature_vector_orthonormal = one-hot encoding of amino acids at each position"
+  ],
+  "constants_required": [
+    {
+      "name": "num_physicochemical_properties",
+      "description": "Number of physicochemical properties used for encoding (e.g., hydrophobicity, charge, polarity, etc.)",
+      "value_or_range": "5-10 properties (typical range from literature)"
+    },
+    {
+      "name": "max_lag_k",
+      "description": "Maximum lag value k for autocorrelation computation",
+      "value_or_range": "1 to min(5, M-1) where M is peptide length"
+    },
+    {
+      "name": "num_peptides_train",
+      "description": "Number of peptides in training dataset",
+      "value_or_range": "500-2000"
+    },
+    {
+      "name": "num_peptides_test",
+      "description": "Number of peptides in test dataset",
+      "value_or_range": "200-500"
+    },
+    {
+      "name": "positive_class_ratio",
+      "description": "Ratio of positive to total samples in dataset",
+      "value_or_range": "0.3-0.5 (balanced to slightly imbalanced)"
+    },
+    {
+      "name": "amino_acid_alphabet_size",
+      "description": "Number of standard amino acids",
+      "value_or_range": "20"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "peptide_length_M",
+      "description": "Length of peptide sequences",
+      "range": "[8, 9, 10, 11, 12, 15]",
+      "units": "amino acids"
+    },
+    {
+      "name": "encoding_method",
+      "description": "Type of encoding method used",
+      "range": "['autocorrelation_physicochemical', 'orthonormal']",
+      "units": "categorical"
+    },
+    {
+      "name": "classifier_type",
+      "description": "Machine learning classifier used for peptide classification",
+      "range": "['SVM', 'Random_Forest', 'Logistic_Regression', 'Neural_Network']",
+      "units": "categorical"
+    },
+    {
+      "name": "num_properties_used",
+      "description": "Number of physicochemical properties used in autocorrelation encoding",
+      "range": "[3, 5, 7, 10]",
+      "units": "count"
+    },
+    {
+      "name": "dataset_size",
+      "description": "Total number of peptides in dataset",
+      "range": "[500, 1000, 1500, 2000]",
+      "units": "count"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Initialize simulation parameters - Set peptide length M, number of physicochemical properties, dataset sizes, and classifier types. Define physicochemical property values for each of the 20 amino acids (normalized to [0,1] range).",
+    "Step 2: Generate synthetic peptide datasets - Create random peptide sequences of length M with binary labels (positive/negative class). Ensure class balance according to positive_class_ratio. Split into training and test sets.",
+    "Step 3: Implement autocorrelation encoding - For each peptide and each physicochemical property p, compute Pp(20+k) for k=1 to max_lag_k using the formula: Pp(20+k) = (1/(M-k)) * sum_{a=1}^{M-k}[val(p,A_a) - val(p,A_{a+k})]. Concatenate all autocorrelation features across properties to form feature vector.",
+    "Step 4: Implement orthonormal encoding - For each peptide, create one-hot encoding where each amino acid at each position is represented by a 20-dimensional binary vector. Concatenate across all positions to form feature vector of dimension M*20.",
+    "Step 5: Train classifiers - For each encoding method and classifier type combination, train the classifier on the training set using the encoded feature vectors.",
+    "Step 6: Evaluate performance - Apply trained classifiers to test set, compute predicted probabilities, generate ROC curves, calculate AUC values, and compute EUC = 1 - AUC for each configuration.",
+    "Step 7: Parameter sweep - Repeat steps 2-6 for all combinations of peptide_length_M, encoding_method, classifier_type, num_properties_used, and dataset_size. Store EUC values for each configuration.",
+    "Step 8: Statistical analysis - For each configuration, run multiple trials (10-30 repetitions) with different random seeds to compute mean EUC and standard deviation. Perform paired t-tests to compare autocorrelation vs orthonormal encoding.",
+    "Step 9: Visualization - Generate plots: (a) Bar charts comparing mean EUC values for autocorrelation vs orthonormal encoding across different classifiers, (b) Line plots showing EUC vs peptide length for both encoding methods, (c) Heatmaps showing EUC values across encoding method and classifier type combinations, (d) Box plots showing EUC distribution across multiple trials for each encoding method."
+  ],
+  "expected_outcomes": "The simulation should reveal that peptide encoding methods using autocorrelation of physicochemical properties consistently achieve lower EUC values (higher AUC, better classification performance) compared to orthonormal encoding methods across multiple classifier types and peptide lengths. Specifically: (1) Mean EUC for autocorrelation encoding should be 0.05-0.15 lower than orthonormal encoding, (2) The performance advantage should be consistent across different classifiers (SVM, Random Forest, etc.), (3) The gap between methods may increase with peptide length as autocorrelation captures more sequential information, (4) Using more physicochemical properties (7-10) should yield better performance than fewer properties (3-5), (5) Statistical tests should show significant differences (p < 0.05) between encoding methods, (6) Visualization should clearly demonstrate the superiority of autocorrelation-based encoding through lower error rates across all experimental conditions, validating the hypothesis that incorporating physicochemical property autocorrelation improves peptide classification effectiveness."
+}

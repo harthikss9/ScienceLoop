@@ -106,6 +106,12 @@
           "type": "string",
           "required": true,
           "description": "Path to JSON file from SimulationPlanAgent (simulation plan with equations, constants, variables, procedure, outcomes)"
+        },
+        {
+          "name": "datasets",
+          "type": "string",
+          "required": false,
+          "description": "Path to JSON file from DatasetAgent (datasets manifest with dataset_type and datasets paths) - optional"
         }
       ]
     },
@@ -119,6 +125,135 @@
           "type": "string",
           "required": true,
           "description": "Path to JSON file from SimulationPlanAgent (simulation plan)"
+        }
+      ]
+    },
+    "SimulationRunnerAgent": {
+      "path": "./agents/SimulationRunnerAgent.py",
+      "language": "python",
+      "description": "Executes generated Python simulation files, captures outputs, and stores artifacts using pure Python (subprocess, os, shutil)",
+      "arguments": [
+        {
+          "name": "python-file",
+          "type": "string",
+          "required": true,
+          "description": "Path to the Python simulation file"
+        },
+        {
+          "name": "datasets",
+          "type": "string",
+          "required": false,
+          "description": "Path to JSON file containing dataset paths (dict or list)"
+        },
+        {
+          "name": "workdir",
+          "type": "string",
+          "required": false,
+          "description": "Working directory for simulation (default: parent of python_file)"
+        },
+        {
+          "name": "timeout",
+          "type": "number",
+          "required": false,
+          "description": "Timeout in seconds (default: 600)"
+        },
+        {
+          "name": "auto-fix",
+          "type": "boolean",
+          "required": false,
+          "description": "Automatically trigger ErrorFeedbackAgent on errors (requires --simulation-plan)"
+        },
+        {
+          "name": "simulation-plan",
+          "type": "string",
+          "required": false,
+          "description": "Path to simulation plan JSON (required if --auto-fix is used)"
+        }
+      ]
+    },
+    "ErrorFeedbackAgent": {
+      "path": "./agents/ErrorFeedbackAgent.py",
+      "language": "python",
+      "description": "Analyzes error reports from SimulationRunnerAgent and generates structured fix requests for CodeGeneratorAgent",
+      "arguments": [
+        {
+          "name": "error-report",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file containing error report from SimulationRunnerAgent"
+        },
+        {
+          "name": "simulation-plan",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file containing the original simulation plan"
+        },
+        {
+          "name": "original-code",
+          "type": "string",
+          "required": false,
+          "description": "Path to the original Python simulation code file (optional)"
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "required": false,
+          "description": "Path to save the fix request JSON (default: print to stdout)"
+        }
+      ]
+    },
+    "ReportAgent": {
+      "path": "./agents/ReportAgent.py",
+      "language": "python",
+      "description": "Generates comprehensive reports analyzing simulation results and comparing expected vs actual outcomes using Claude 4.5 Sonnet",
+      "arguments": [
+        {
+          "name": "paper-understanding",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from PaperUnderstandingAgent"
+        },
+        {
+          "name": "knowledge-graph",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from KnowledgeGraphAgent"
+        },
+        {
+          "name": "hypothesis",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from HypothesisAgent"
+        },
+        {
+          "name": "simulation-plan",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from SimulationPlanAgent"
+        },
+        {
+          "name": "simulation-result",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from SimulationRunnerAgent result"
+        },
+        {
+          "name": "error-history",
+          "type": "string",
+          "required": false,
+          "description": "Path to JSON file containing list of error reports (optional)"
+        },
+        {
+          "name": "output",
+          "type": "string",
+          "required": false,
+          "description": "Path to save the report JSON (default: print to stdout)"
+        },
+        {
+          "name": "markdown-output",
+          "type": "string",
+          "required": false,
+          "description": "Path to save the markdown report (optional)"
         }
       ]
     }

@@ -1,38 +1,35 @@
 {
-  "summary": "This paper proposes an improved method for ranking influential nodes in complex networks by integrating multiple attributes and using information entropy weighting. The method enhances the traditional k-shell decomposition by incorporating iterative information processed through a sigmoid function and combining shell values with position and neighbor attributes. The effectiveness of the proposed method is validated through experimental simulations using the SIR model and various evaluation measures.",
+  "summary": "This paper proposes an improved multiattribute k-shell method for ranking influential nodes in complex networks using information entropy weighting. The method enhances the traditional k-shell decomposition by incorporating iterative information processed through a sigmoid function to determine node position indices and combines this with neighbor attributes for a more nuanced node influence assessment.",
   "formulas": [
-    "km_i = kr_i + \\lambda * ke_i",
-    "\\theta(i) = ks_max - ks_i + 1 / sum(j \\in S_c) d_ij",
-    "\\delta_i = ks_i * (1 + iter(i) / m)",
-    "IC_i = \\delta_i * d_i + sum(j \\in \\Gamma(i)) (\\delta_j * d_j)",
-    "C_nc(i) = sum(j \\in \\Gamma(i)) ks(j)",
-    "C_nc+(i) = sum(j \\in \\Gamma(i)) C_nc(j)",
-    "p(i) = 1 / (1 + e^{-sqrt(iter(i))})",
-    "PN_p(i) = ks_i + sum(j \\in \\Gamma(i)) p(j)",
-    "PN_n(i) = sum(j \\in \\Gamma(i)) sum(l \\in \\Gamma(j)) k_l",
+    "km_i = kr_i + \\lambda ke_i",
+    "\\theta(i) = ks_{max} - ks_i + 1 \\sum_{j \\in S} cd_{ij}",
+    "\\delta_i = ks_i * (1 + \\frac{iter(i)}{m})",
+    "IC_i = \\delta_i * d_i + \\sum_{j \\in \\Gamma(i)} \\delta_j * d_j",
+    "C_nc(i) = \\sum_{j \\in \\Gamma(i)} ks(j)",
+    "C_nc^+(i) = \\sum_{j \\in \\Gamma(i)} C_nc(j)",
+    "p(i) = \\frac{1}{1 + e^{-\\sqrt{iter(i)}}}",
+    "PN_p(i) = ks_i + \\sum_{j \\in \\Gamma(i)} p(j)",
+    "PN_n(i) = \\sum_{j \\in \\Gamma(i)} \\sum_{l \\in \\Gamma(j)} k_l",
     "PN(i) = w_1 * PN_p(i) + w_2 * PN_n(i)",
-    "H_i = -1 / ln(n) * sum(j=1 to n) r_ij * ln(r_ij)",
-    "r_1j = PN_p(j) / sum(j=1 to n) PN_p(j), r_2j = PN_n(j) / sum(j=1 to n) PN_n(j)",
-    "w_i = 1 - H_i / (2 - sum(i) H_i)",
-    "\\tau = (nc - nd) / (0.5 * n * (n - 1))",
-    "\\epsilon(p) = 1 - (sum(i \\in \\phi_m(p)) F_i(tc) / sum(j \\in \\phi_s(p)) F_j(tc))"
+    "H_i = -\\frac{1}{\\ln n} \\sum_{j=1}^n r_{ij} \\ln r_{ij}",
+    "r_{1j} = \\frac{PN_p(j)}{\\sum_{j=1}^n PN_p(j)}, r_{2j} = \\frac{PN_n(j)}{\\sum_{j=1}^n PN_n(j)}",
+    "w_i = \\frac{1 - H_i}{2 - \\sum_i H_i}"
   ],
   "relationships": [
-    "The position index p(i) increases as the number of iterations increases, indicating a node's closeness to the network core.",
-    "The position attribute PN_p(i) combines the shell value and the position index to reflect a node's overall network position.",
-    "The neighbor attribute PN_n(i) aggregates the degrees of second-order neighbors to assess the influence spread capability of a node.",
-    "The final influence score PN(i) is a weighted combination of position and neighbor attributes, using information entropy for weighting.",
-    "The propagation capability of nodes is evaluated using the SIR model, with the influence of nodes assessed through various centrality measures."
+    "The node's influence is quantified by combining local neighborhood information with global iteration data.",
+    "The position index p(i) is derived from the number of iterations iter(i) using a sigmoid function, reflecting the node's proximity to the network core.",
+    "The position attribute PN_p(i) and neighbor attribute PN_n(i) are combined using weights derived from information entropy to form the overall influence score PN(i).",
+    "The influence of nodes is evaluated through their propagation capability using the SIR model, and the effectiveness of the ranking method is measured by Kendall's coefficient and imprecision function."
   ],
   "variables": [
     "km_i: Mixed degree of node i",
     "kr_i: Residual degree of node i",
     "ke_i: Depletion degree of node i",
-    "\\lambda: Adjustable parameter for mixed degree decomposition",
+    "\\lambda: Adjustable parameter between 0 and 1",
     "ks_i: Shell value of node i",
-    "ks_max: Maximum shell value in the network",
-    "S_c: Set of core nodes with maximum ks value",
-    "d_ij: Shortest path distance between node i and node j",
+    "ks_{max}: Maximum shell value in the network",
+    "S: Set of core nodes in the network",
+    "cd_{ij}: Shortest path distance between node i and node j",
     "iter(i): Number of iterations node i is involved in during decomposition",
     "m: Total number of iterations in K-shell decomposition",
     "d_i: Degree of node i",
@@ -40,20 +37,15 @@
     "p(i): Position index of node i",
     "PN_p(i): Position attribute of node i",
     "PN_n(i): Neighbor attribute of node i",
-    "w_1, w_2: Weights for position and neighbor attributes",
+    "PN(i): Combined influence score of node i",
     "H_i: Entropy of attribute i",
-    "r_ij: Normalized value of attribute i for node j",
-    "nc, nd: Number of concordant and discordant pairs",
-    "n: Total number of nodes",
-    "\\tau: Kendall's coefficient",
-    "\\epsilon(p): Imprecision function",
-    "F_i(tc): Final influence of node i",
-    "\\phi_m(p), \\phi_s(p): Sets of top-ranked nodes by method m and SIR model"
+    "r_{ij}: Normalized value of attribute i for node j",
+    "w_i: Weight for attribute i"
   ],
   "key_ideas": [
-    "Improvement of the k-shell method by integrating multiple attributes and iterative information.",
+    "Introduction of an improved multiattribute k-shell method that integrates iterative information with node attributes to rank influential nodes.",
     "Use of a sigmoid function to process iteration information for determining node position indices.",
-    "Combination of position and neighbor attributes weighted by information entropy to rank node influence.",
-    "Validation of the proposed method through experimental simulations using the SIR model and evaluation measures like Kendall coefficient and imprecision function."
+    "Combination of position and neighbor attributes weighted by information entropy to enhance node influence assessment.",
+    "Evaluation of the proposed method's effectiveness using the SIR model and statistical measures like Kendall's coefficient and imprecision function."
   ]
 }

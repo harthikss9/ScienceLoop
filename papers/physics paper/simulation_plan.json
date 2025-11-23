@@ -1,102 +1,91 @@
 {
   "simulation_equations": [
-    "Q = Mdot / (Vinf * R^1.5)",
-    "Dmom = Mdot * Vinf * sqrt(R)",
-    "L = 4 * pi * sigma * R^2 * T^4",
-    "v(r) = Vinf * (1 - R/r)^beta",
-    "EW_HeII = f(Mdot, beta, Vinf, R, T)",
-    "log(Dmom / (L/c)) = x_WLR * log(L/L_solar) + D_WLR(Z)"
+    "v(r) = V_inf * (1 - R_star/r)^beta",
+    "rho(r, theta) = rho_0 * (R_star/r)^2 * (1 - R_star/r)^(-1) * g(theta)",
+    "g(theta) = 1 + alpha * cos(theta)^2",
+    "M_dot = 4 * pi * R_star^2 * rho_0 * V_inf * f_geom",
+    "I_lambda(i, v_rot, beta) = integral over visible hemisphere of emission_function(r, theta, phi, i, v_rot, beta)",
+    "v_proj(r, theta, phi, i) = v(r) * sin(theta) * cos(phi) * sin(i) + v_rot * sin(theta) * sin(phi) * sin(i)",
+    "log(D_mom) = log(M_dot) + log(V_inf) + 0.5 * log(R_star)",
+    "beta_obs = fit_parameter from synthetic line profiles",
+    "Q = M_dot / (V_inf * R_star^(3/2))"
   ],
   "constants_required": [
     {
-      "name": "sigma",
-      "description": "Stefan-Boltzmann constant",
-      "value_or_range": "5.670374419e-8 W m^-2 K^-4"
-    },
-    {
-      "name": "c",
-      "description": "Speed of light",
-      "value_or_range": "2.998e8 m/s"
-    },
-    {
-      "name": "L_solar",
-      "description": "Solar luminosity",
-      "value_or_range": "3.828e26 W"
-    },
-    {
-      "name": "R_solar",
-      "description": "Solar radius",
-      "value_or_range": "6.957e8 m"
-    },
-    {
-      "name": "M_solar",
-      "description": "Solar mass",
-      "value_or_range": "1.989e30 kg"
-    },
-    {
-      "name": "x_WLR",
-      "description": "Slope of the wind momentum-luminosity relationship",
-      "value_or_range": "1.8 to 2.0 (typical for O-type stars)"
-    },
-    {
-      "name": "D_WLR",
-      "description": "Metallicity-dependent offset in WLR",
-      "value_or_range": "function of Z, approximately 0.6 * log(Z/Z_solar) for low metallicity"
-    },
-    {
-      "name": "T_eff",
-      "description": "Effective temperature for O6.5 III star",
-      "value_or_range": "38000 K (typical for O6.5 III)"
-    },
-    {
       "name": "R_star",
-      "description": "Stellar radius for GHV-62024",
-      "value_or_range": "10.0 R_solar (from paper context)"
+      "description": "Stellar radius for O6.5 III star",
+      "value_or_range": "12.0 to 15.0 solar radii"
     },
     {
-      "name": "Vinf_base",
-      "description": "Terminal wind velocity",
-      "value_or_range": "1500 km/s (typical for O-type stars at low metallicity)"
+      "name": "M_star",
+      "description": "Stellar mass for O6.5 III star",
+      "value_or_range": "30.0 to 40.0 solar masses"
+    },
+    {
+      "name": "L_star",
+      "description": "Stellar luminosity",
+      "value_or_range": "10^5.5 to 10^5.8 solar luminosities"
+    },
+    {
+      "name": "V_inf_base",
+      "description": "Wind terminal velocity for non-rotating case",
+      "value_or_range": "2000 to 2500 km/s"
+    },
+    {
+      "name": "M_dot_base",
+      "description": "Mass-loss rate for non-rotating case",
+      "value_or_range": "10^(-7.5) to 10^(-6.5) solar masses per year"
+    },
+    {
+      "name": "beta_intrinsic",
+      "description": "Intrinsic wind velocity law exponent for slow rotators",
+      "value_or_range": "0.8 to 1.0"
+    },
+    {
+      "name": "alpha_gravity_darkening",
+      "description": "Gravity darkening parameter for wind density distribution",
+      "value_or_range": "0.3 to 0.7"
     },
     {
       "name": "Z",
       "description": "Metallicity relative to solar",
-      "value_or_range": "0.1 Z_solar (IC1613 metallicity, Z < 0.2 Z_solar)"
+      "value_or_range": "0.1 (for IC 1613, approximately 1/10 solar)"
+    },
+    {
+      "name": "v_crit",
+      "description": "Critical rotation velocity",
+      "value_or_range": "sqrt(G * M_star / R_star)"
     }
   ],
   "variables_to_vary": [
     {
-      "name": "beta",
-      "description": "Exponent of the wind velocity law",
-      "range": "[0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0]",
+      "name": "v_rot",
+      "description": "Equatorial rotation velocity",
+      "range": "[0, 50, 100, 150, 200, 250, 300, 350, 400]",
+      "units": "km/s"
+    },
+    {
+      "name": "inclination",
+      "description": "Viewing inclination angle (0\u00b0 = pole-on, 90\u00b0 = equator-on)",
+      "range": "[0, 10, 20, 30, 40, 50, 60, 70, 80, 90]",
+      "units": "degrees"
+    },
+    {
+      "name": "beta_model",
+      "description": "Input wind velocity law exponent for model grid",
+      "range": "[0.8, 1.0, 1.2, 1.5, 2.0, 2.5]",
       "units": "dimensionless"
-    },
-    {
-      "name": "Mdot",
-      "description": "Mass-loss rate adjusted to maintain constant Q-parameter",
-      "range": "computed from Q constraint for each beta",
-      "units": "M_solar/yr"
-    },
-    {
-      "name": "Q_target",
-      "description": "Target Q-parameter to maintain constant",
-      "range": "[1e-8, 5e-8, 1e-7] M_solar yr^-1 / (km/s * R_solar^1.5)",
-      "units": "M_solar yr^-1 / (km/s * R_solar^1.5)"
     }
   ],
   "procedure_steps": [
-    "Step 1: Initialize constants (sigma, c, L_solar, R_solar, M_solar, T_eff, R_star, Vinf_base, Z) and convert units to SI where necessary",
-    "Step 2: Calculate stellar luminosity L using L = 4 * pi * sigma * R_star^2 * T_eff^4",
-    "Step 3: For each Q_target value in the range, create a parameter sweep loop",
-    "Step 4: For each beta value in [0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0], calculate the required Mdot using Mdot = Q_target * Vinf_base * R_star^1.5",
-    "Step 5: Calculate the modified wind momentum Dmom = Mdot * Vinf_base * sqrt(R_star)",
-    "Step 6: Verify WLR consistency by computing log(Dmom / (L/c)) and comparing with x_WLR * log(L/L_solar) + D_WLR(Z)",
-    "Step 7: Model the wind velocity profile v(r) = Vinf_base * (1 - R_star/r)^beta for radial distances r from 1.0*R_star to 10.0*R_star",
-    "Step 8: Calculate a proxy for He II 4686 emission line equivalent width using EW_HeII_proxy = integral over wind of emission function proportional to (Mdot * rho(r)^2 * ionization_fraction(r)) where rho(r) scales with Mdot/(4*pi*r^2*v(r))",
-    "Step 9: For simplified emission calculation, use EW_HeII_proxy = k * Mdot^alpha * beta^gamma where k is normalization constant, alpha ~ 1.5-2.0 (emission scales superlinearly with density), gamma ~ -0.5 to -1.0 (higher beta reduces inner wind density and emission)",
-    "Step 10: Store results for each (beta, Q_target) combination: beta, Mdot, Dmom, WLR_deviation, EW_HeII_proxy",
-    "Step 11: Generate visualizations: (a) EW_HeII_proxy vs beta for each Q_target, (b) Mdot vs beta for each Q_target, (c) WLR deviation vs beta, (d) wind velocity profiles v(r) for different beta values",
-    "Step 12: Calculate percentage change in EW_HeII_proxy between beta=0.8 and beta=2.0 to quantify the measurable decrease predicted by the hypothesis"
+    "Step 1: Initialize constants (R_star, M_star, L_star, V_inf_base, M_dot_base, Z, alpha_gravity_darkening) and create parameter grids for v_rot (0-400 km/s), inclination (0-90\u00b0), and beta_model (0.8-2.5)",
+    "Step 2: For each combination of (v_rot, inclination, beta_model): (a) Compute the 3D wind velocity field v(r, theta) using the beta law with rotation effects; (b) Compute the wind density distribution rho(r, theta) with gravity darkening g(theta) = 1 + alpha * cos(theta)^2 to account for polar enhancement in fast rotators",
+    "Step 3: Generate synthetic line profiles by integrating emission over the visible stellar hemisphere: (a) Set up spherical grid (r, theta, phi) from R_star to 5*R_star; (b) For each grid point, compute projected velocity v_proj including both wind velocity and rotational velocity; (c) Compute emission coefficient proportional to rho(r, theta)^2 for optically thin lines; (d) Project onto velocity space accounting for inclination angle i; (e) Convolve with instrumental profile",
+    "Step 4: Fit the synthetic line profiles to extract observed beta_obs: (a) Use least-squares fitting to match profile shape with beta law; (b) Record beta_obs for each (v_rot, inclination) combination; (c) Compare beta_obs to input beta_model to quantify viewing angle effects",
+    "Step 5: Compute wind momentum D_mom = M_dot * V_inf * R_star^0.5 for each model, adjusting M_dot for rotation effects using M_dot(v_rot) = M_dot_base * (1 + 0.3 * (v_rot/v_crit)^2) to account for enhanced equatorial mass loss",
+    "Step 6: Test the hypothesis by analyzing results: (a) For fast rotators (v_rot > 200 km/s) at low inclination (i < 30\u00b0), verify that beta_obs > 1.5; (b) For slow rotators or high inclination, verify that beta_obs \u2248 0.8-1.0; (c) Plot log(D_mom) vs log(L_star/L_sun) for all models and verify they follow the same WLR with slope \u2248 1.8-2.0 regardless of rotation/inclination",
+    "Step 7: Generate visualizations: (a) 2D heatmap of beta_obs vs (v_rot, inclination); (b) Line profile comparison for fast rotator at i=10\u00b0 vs i=70\u00b0; (c) Wind momentum-luminosity diagram showing all models collapse onto single relation; (d) Contour plot showing regions where beta_obs > 1.5 in (v_rot, inclination) space",
+    "Step 8: Quantify systematic effects: (a) Calculate mean beta_obs for fast rotators (v_rot > 200 km/s) at i < 30\u00b0 and compare to slow rotators; (b) Compute scatter in WLR for different rotation/inclination combinations; (c) Determine critical rotation velocity and inclination angle where beta_obs transitions from normal to elevated values"
   ],
-  "expected_outcomes": "The simulation should reveal: (1) A measurable decrease in He II 4686 emission line equivalent width (EW_HeII_proxy) as beta increases from 0.8 to 2.0, with the decrease being approximately 20-50% based on the slower inner wind acceleration reducing emission region density; (2) Mass-loss rate Mdot increases proportionally with beta to maintain constant Q-parameter, demonstrating the interdependence between Mdot and beta; (3) The modified wind momentum Dmom remains consistent with the wind momentum-luminosity relationship across all beta values, with deviations less than 0.1-0.2 dex, confirming that the WLR is maintained despite varying beta; (4) Wind velocity profiles show progressively slower acceleration in the inner wind (r < 3R_star) as beta increases, with higher beta values producing more extended acceleration zones; (5) The relationship holds across different Q_target values, indicating robustness of the beta-EW relationship in low-metallicity environments (Z < 0.2 Z_solar); (6) The results should demonstrate that high beta values (approaching 2.0) are physically consistent with observed stellar wind properties and WLR constraints, supporting the hypothesis that this may be a general property of low-metallicity O-type stellar winds rather than unique to GHV-62024"
+  "expected_outcomes": "The simulation should reveal: (1) A strong dependence of observed beta (beta_obs) on the combination of rotation velocity and inclination angle, with fast rotators (v_rot > 200 km/s) viewed at low inclination (i < 30\u00b0) showing systematically elevated beta_obs > 1.5, while slow rotators or high-inclination systems show beta_obs \u2248 0.8-1.0. (2) Synthetic line profiles for fast rotators at low inclination should exhibit enhanced emission at intermediate velocities due to the superposition of wind regions with different velocities and densities, mimicking a steeper velocity law. (3) Despite the variation in observed beta, all models should follow the same wind momentum-luminosity relationship when plotted as log(D_mom) vs log(L_star), with a tight correlation (scatter < 0.3 dex) and slope consistent with radiatively driven wind theory (\u22481.8-2.0). (4) A clear transition region in (v_rot, inclination) parameter space where beta_obs increases from normal to elevated values, demonstrating that the high beta observed in GHV-62024 is indeed an artifact of viewing geometry rather than a fundamental change in wind physics. (5) The 2D heatmap should show a diagonal pattern where the combination of high rotation and low inclination produces the highest beta_obs values, validating the paper's interpretation that GHV-62024's unusual properties result from being a fast rotator seen nearly pole-on."
 }

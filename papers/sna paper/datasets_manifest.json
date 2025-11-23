@@ -7,5 +7,5 @@
     "karate": "papers/sna paper/datasets/karate.edgelist",
     "dolphins": "papers/sna paper/datasets/dolphins.edgelist"
   },
-  "reasoning": "The simulation plan explicitly mentions network topologies (scale-free, small-world, random, real-world), uses network-specific terms (k-shell, Gamma(i) for neighbors, nodes, edges), and specifies graph generation parameters in Step 1 (Barab\u00e1si-Albert with m=3, Watts-Strogatz with k=6 and p=0.3, Erd\u0151s-R\u00e9nyi with p=0.05). The plan also mentions real-world networks if available. Network sizes are specified as [100, 500, 1000, 2000] nodes."
+  "reasoning": "The simulation plan explicitly mentions network topologies including 'scale_free_BA' (Barab\u00e1si-Albert), 'small_world_WS' (Watts-Strogatz), 'random_ER' (Erd\u0151s-R\u00e9nyi), and 'real_world_networks'. The plan involves k-shell decomposition, degree sequences, neighbors (Gamma(i)), and network analysis. Variables to vary include network_topology, network_size [100, 500, 1000, 2000], and network_parameters with specific values for BA (m=[2,3,4,5]), WS (k=[4,6,8], p=[0.1,0.3,0.5]), and ER (p=[0.01,0.05,0.1]). The procedure explicitly states 'Generate network topologies - Create multiple network instances for each topology type'. Real-world networks are mentioned as a category to test, so common benchmark networks should be included."
 }

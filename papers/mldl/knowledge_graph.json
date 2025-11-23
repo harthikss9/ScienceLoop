@@ -1,0 +1,63 @@
+{
+  "nodes": [
+    "Peptide Classification Effectiveness",
+    "Peptide Encoding Method",
+    "Peptide Sequence",
+    "Machine Learning Classifiers",
+    "Physicochemical Properties of Amino Acids",
+    "Human Immune System Interaction",
+    "Vaccine and Treatment Design",
+    "Classifier Performance",
+    "Novel Peptide Encoding Methods",
+    "Traditional Peptide Encoding Methods",
+    "Encoding Techniques in Machine Learning",
+    "Prediction Accuracy in Biomedical Applications",
+    "Length of Peptide Sequence",
+    "Specific Position in Peptide Sequence",
+    "Normalized Physicochemical Property Value",
+    "Error Under the ROC Curve",
+    "Area Under the ROC Curve"
+  ],
+  "edges": [
+    {
+      "source": "Peptide Classification Effectiveness",
+      "relation": "is dependent on",
+      "target": "Peptide Encoding Method"
+    },
+    {
+      "source": "Peptide Encoding Method",
+      "relation": "transforms",
+      "target": "Peptide Sequence"
+    },
+    {
+      "source": "Peptide Encoding Method",
+      "relation": "is suitable for",
+      "target": "Machine Learning Classifiers"
+    },
+    {
+      "source": "Physicochemical Properties of Amino Acids",
+      "relation": "determine",
+      "target": "Human Immune System Interaction"
+    },
+    {
+      "source": "Human Immune System Interaction",
+      "relation": "influences",
+      "target": "Vaccine and Treatment Design"
+    },
+    {
+      "source": "Classifier Performance",
+      "relation": "is influenced by",
+      "target": "Peptide Encoding Method"
+    },
+    {
+      "source": "Novel Peptide Encoding Methods",
+      "relation": "show superior results compared to",
+      "target": "Traditional Peptide Encoding Methods"
+    },
+    {
+      "source": "Encoding Techniques in Machine Learning",
+      "relation": "impact",
+      "target": "Prediction Accuracy in Biomedical Applications"
+    }
+  ]
+}

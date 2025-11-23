@@ -1,85 +1,98 @@
 {
   "nodes": [
-    "Star GHV-62024",
-    "Modified Wind Momentum Rate",
-    "Mass-Loss Rate",
-    "Wind Terminal Velocity",
-    "Stellar Radius",
-    "Exponent of the Wind Velocity Law",
-    "Parameter Q",
-    "Luminosity of the Star",
-    "Effective Temperature of the Star",
-    "Metallicity of the Star",
-    "Helium Abundance by Number",
-    "Nitrogen Abundance",
-    "Wind Momentum-Luminosity Relationship",
-    "Radiatively Driven Wind Theory",
-    "Emission Profile of He II 4686",
-    "Inner Wind Acceleration",
-    "Wind Properties",
-    "Stellar Evolution",
-    "Low-Metallicity Environments"
+    "GHV-62024",
+    "Modified wind momentum rate of the stellar wind",
+    "Mass-loss rate",
+    "Wind terminal velocity",
+    "Stellar radius",
+    "Exponent of the wind velocity law",
+    "Parameter determining the net wind emission",
+    "Metallicity",
+    "Escape velocity",
+    "Helium abundance by number",
+    "Nitrogen abundance",
+    "Wind momentum-luminosity relationship",
+    "Stellar luminosity",
+    "Line profiles",
+    "Emission at low velocities",
+    "Emission at high velocities",
+    "CNO mixing",
+    "Radiatively driven winds",
+    "Wind structure",
+    "Wind properties",
+    "Wind velocity profiles",
+    "Small Magellanic Cloud metallicities"
   ],
   "edges": [
     {
-      "source": "Mass-Loss Rate",
-      "relation": "is interdependent with",
-      "target": "Exponent of the Wind Velocity Law"
+      "source": "Wind momentum-luminosity relationship",
+      "relation": "is dependent on",
+      "target": "Stellar luminosity"
     },
     {
-      "source": "Exponent of the Wind Velocity Law",
-      "relation": "is crucial for fitting",
-      "target": "Emission Profile of He II 4686"
+      "source": "Wind momentum-luminosity relationship",
+      "relation": "is dependent on",
+      "target": "Metallicity"
     },
     {
-      "source": "Wind Terminal Velocity",
-      "relation": "is related through",
-      "target": "Parameter Q"
+      "source": "Exponent of the wind velocity law",
+      "relation": "influences",
+      "target": "Line profiles"
     },
     {
-      "source": "Parameter Q",
-      "relation": "is defined as",
-      "target": "Mass-Loss Rate divided by the product of Wind Terminal Velocity and Stellar Radius to the power of 1.5"
+      "source": "Mass-loss rate",
+      "relation": "influences",
+      "target": "Emission at high velocities"
     },
     {
-      "source": "Star GHV-62024",
+      "source": "Exponent of the wind velocity law",
+      "relation": "is suggested to be an artifact from",
+      "target": "Viewing angle of fast rotators"
+    },
+    {
+      "source": "Helium abundance by number",
+      "relation": "is indicative of",
+      "target": "CNO mixing"
+    },
+    {
+      "source": "Nitrogen abundance",
+      "relation": "is indicative of",
+      "target": "CNO mixing"
+    },
+    {
+      "source": "GHV-62024",
       "relation": "follows",
-      "target": "Wind Momentum-Luminosity Relationship"
+      "target": "Wind momentum-luminosity relationship"
     },
     {
-      "source": "Wind Momentum-Luminosity Relationship",
-      "relation": "is dependent on",
-      "target": "Luminosity of the Star"
+      "source": "Radiatively driven winds",
+      "relation": "are supported by",
+      "target": "Low metallicity environments"
     },
     {
-      "source": "Wind Momentum-Luminosity Relationship",
-      "relation": "is dependent on",
-      "target": "Metallicity of the Star"
+      "source": "Radiatively driven winds",
+      "relation": "are confirmed beyond",
+      "target": "Small Magellanic Cloud metallicities"
     },
     {
-      "source": "Exponent of the Wind Velocity Law",
-      "relation": "indicates",
-      "target": "Slower Acceleration in the Inner Wind"
+      "source": "Fast rotation",
+      "relation": "can significantly alter",
+      "target": "Wind structure"
     },
     {
-      "source": "Star GHV-62024",
-      "relation": "suggests applicability of",
-      "target": "Radiatively Driven Wind Theory"
+      "source": "Fast rotation",
+      "relation": "can significantly alter",
+      "target": "Wind properties"
     },
     {
-      "source": "Radiatively Driven Wind Theory",
-      "relation": "is applicable at",
-      "target": "Low-Metallicity Environments"
+      "source": "Modified wind momentum rate of the stellar wind",
+      "relation": "is modeled by",
+      "target": "Mass-loss rate, Wind terminal velocity, Stellar radius"
     },
     {
-      "source": "Wind Properties",
-      "relation": "are crucial for understanding",
-      "target": "Stellar Evolution"
-    },
-    {
-      "source": "Stellar Evolution",
-      "relation": "is studied in",
-      "target": "Low-Metallicity Environments"
+      "source": "Parameter determining the net wind emission",
+      "relation": "is modeled by",
+      "target": "Mass-loss rate, Wind terminal velocity, Stellar radius"
     }
   ]
 }

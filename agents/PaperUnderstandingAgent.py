@@ -138,9 +138,9 @@ async def analyze_pdf_direct(pdf_path: str) -> dict:
     
     print(f"PDF text loaded ({len(raw_text)} characters)", file=sys.stderr)
     
-    # Truncate text if too long (rough estimate: 1 token ≈ 4 chars, 8k context = ~32k chars)
-    # Reserve ~5k chars for prompt template, so max ~27k chars for PDF text
-    max_pdf_chars = 27000
+    # Truncate text if too long (gpt-4-turbo has ~128k context, ~1 token ≈ 4 chars)
+    # Reserve ~28k chars for prompt template and response, so max ~100k chars for PDF text
+    max_pdf_chars = 100000  # Increased limit for longer papers
     if len(raw_text) > max_pdf_chars:
         print(f"Warning: PDF text is too long ({len(raw_text)} chars), truncating to {max_pdf_chars} chars", file=sys.stderr)
         raw_text = raw_text[:max_pdf_chars] + "\n\n[Text truncated due to length...]"

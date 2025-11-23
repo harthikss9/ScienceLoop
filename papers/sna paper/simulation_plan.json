@@ -1,46 +1,47 @@
 {
   "simulation_equations": [
+    "iter(i) = iteration_number_when_node_i_is_removed_in_k_shell_decomposition",
     "p(i) = 1 / (1 + exp(-sqrt(iter(i))))",
-    "PN_p(i) = ks_i + sum(j in Gamma(i)) p(j)",
-    "PN_n(i) = sum(j in Gamma(i)) sum(l in Gamma(j)) k_l",
-    "r_1j = PN_p(j) / sum(j=1 to n) PN_p(j)",
-    "r_2j = PN_n(j) / sum(j=1 to n) PN_n(j)",
-    "H_1 = -1 / ln(n) * sum(j=1 to n) r_1j * ln(r_1j)",
-    "H_2 = -1 / ln(n) * sum(j=1 to n) r_2j * ln(r_2j)",
+    "PN_p(i) = ks_i + sum_{j in Gamma(i)} p(j)",
+    "PN_n(i) = sum_{j in Gamma(i)} sum_{l in Gamma(j)} k_l",
+    "r_{1j} = PN_p(j) / sum_{j=1}^n PN_p(j)",
+    "r_{2j} = PN_n(j) / sum_{j=1}^n PN_n(j)",
+    "H_1 = -(1/ln(n)) * sum_{j=1}^n r_{1j} * ln(r_{1j})",
+    "H_2 = -(1/ln(n)) * sum_{j=1}^n r_{2j} * ln(r_{2j})",
     "w_1 = (1 - H_1) / (2 - (H_1 + H_2))",
     "w_2 = (1 - H_2) / (2 - (H_1 + H_2))",
     "PN(i) = w_1 * PN_p(i) + w_2 * PN_n(i)",
-    "tau = (nc - nd) / (0.5 * n * (n - 1))",
-    "epsilon(p) = 1 - (sum(i in phi_m(p)) F_i(tc) / sum(j in phi_s(p)) F_j(tc))",
-    "SIR: dS/dt = -beta * S * I / N, dI/dt = beta * S * I / N - gamma * I, dR/dt = gamma * I"
+    "SIR_model: dS/dt = -beta * S * I / N, dI/dt = beta * S * I / N - gamma * I, dR/dt = gamma * I",
+    "F(i) = sum_{t=1}^T I_i(t) where I_i(t) is number of infected nodes at time t when node i is initial spreader",
+    "tau = (n_c - n_d) / (n(n-1)/2) where n_c is concordant pairs, n_d is discordant pairs"
   ],
   "constants_required": [
     {
       "name": "beta",
       "description": "Infection rate in SIR model",
-      "value_or_range": "[0.1, 0.5] typical range for network simulations"
+      "value_or_range": "[0.05, 0.15] typical range, paper uses multiple values"
     },
     {
       "name": "gamma",
       "description": "Recovery rate in SIR model",
-      "value_or_range": "0.1 (fixed, as per typical SIR simulations)"
+      "value_or_range": "0.1 (fixed, as per typical SIR model setup)"
     },
     {
-      "name": "tc",
-      "description": "Critical time point for measuring final influence in SIR model",
-      "value_or_range": "Time when infection stabilizes (typically 50-100 time steps)"
+      "name": "T_max",
+      "description": "Maximum time steps for SIR simulation",
+      "value_or_range": "100-200 time steps"
     },
     {
-      "name": "p",
-      "description": "Proportion of top-ranked nodes to compare",
-      "value_or_range": "[0.01, 0.10] representing 1% to 10% of nodes"
+      "name": "num_simulations",
+      "description": "Number of Monte Carlo runs for each initial spreader",
+      "value_or_range": "100-1000 runs for statistical reliability"
     }
   ],
   "variables_to_vary": [
     {
       "name": "network_topology",
       "description": "Type of complex network to test",
-      "range": "['scale_free', 'small_world', 'random', 'real_world']",
+      "range": "['scale_free_BA', 'small_world_WS', 'random_ER', 'real_world_networks']",
       "units": "categorical"
     },
     {
@@ -50,31 +51,39 @@
       "units": "nodes"
     },
     {
-      "name": "ranking_method",
-      "description": "Node ranking method to compare",
-      "range": "['k_shell_only', 'k_shell_first_order', 'proposed_PN']",
+      "name": "network_parameters",
+      "description": "Specific parameters for network generation (e.g., m for BA, k and p for WS)",
+      "range": "BA: m=[2,3,4,5], WS: k=[4,6,8], p=[0.1,0.3,0.5], ER: p=[0.01,0.05,0.1]",
+      "units": "dimensionless"
+    },
+    {
+      "name": "weighting_scheme",
+      "description": "Method for combining position and neighbor attributes",
+      "range": "['entropy_weighted', 'equal_weighted', 'position_only', 'neighbor_only']",
       "units": "categorical"
     },
     {
-      "name": "initial_infected_node",
-      "description": "Node selected as initial spreader in SIR model",
-      "range": "All nodes in network (for comprehensive evaluation)",
-      "units": "node_id"
+      "name": "beta_sir",
+      "description": "Infection rate parameter for SIR model",
+      "range": "[0.05, 0.08, 0.10, 0.12, 0.15]",
+      "units": "rate"
     }
   ],
   "procedure_steps": [
-    "Step 1: Generate or load complex networks with different topologies (scale-free using Barab\u00e1si-Albert model with m=3, small-world using Watts-Strogatz with k=6 and p=0.3, random Erd\u0151s-R\u00e9nyi with p=0.05, and real-world networks if available)",
-    "Step 2: For each network, perform k-shell decomposition to obtain ks_i for all nodes and record iter(i) for each node during the decomposition process",
-    "Step 3: Implement baseline method 1 (k-shell only): rank nodes by ks_i values directly",
-    "Step 4: Implement baseline method 2 (k-shell with first-order neighbors): compute C_nc(i) = sum(j in Gamma(i)) ks(j) and rank by ks_i + C_nc(i)",
-    "Step 5: Implement proposed method: (a) compute position index p(i) using sigmoid function, (b) compute position attribute PN_p(i) = ks_i + sum(j in Gamma(i)) p(j), (c) compute neighbor attribute PN_n(i) = sum(j in Gamma(i)) sum(l in Gamma(j)) k_l, (d) normalize to get r_1j and r_2j, (e) compute information entropy H_1 and H_2, (f) compute weights w_1 and w_2, (g) compute final score PN(i) = w_1 * PN_p(i) + w_2 * PN_n(i)",
-    "Step 6: For each ranking method, obtain ranked list of nodes from highest to lowest influence score",
-    "Step 7: Run SIR model simulations: (a) for each node i in the network, initialize it as the sole infected node (I=1, S=n-1, R=0), (b) simulate SIR dynamics using discrete-time updates with beta in [0.1, 0.5] and gamma=0.1, (c) record final influence F_i(tc) as the total number of recovered nodes at time tc when infection stabilizes, (d) repeat for all nodes to get ground truth ranking based on actual propagation capability",
-    "Step 8: Compute Kendall's tau correlation: (a) for each ranking method, compare its node ranking with SIR-based ground truth ranking, (b) count concordant pairs (nc) where both rankings agree on order, (c) count discordant pairs (nd) where rankings disagree, (d) compute tau = (nc - nd) / (0.5 * n * (n - 1))",
-    "Step 9: Compute imprecision function epsilon(p): (a) select top p% nodes according to each ranking method (phi_m(p)), (b) select top p% nodes according to SIR ground truth (phi_s(p)), (c) compute epsilon(p) = 1 - (sum(i in phi_m(p)) F_i(tc) / sum(j in phi_s(p)) F_j(tc)), (d) vary p from 1% to 10%",
-    "Step 10: Repeat steps 1-9 for all network topologies and sizes, averaging results over multiple network instances (at least 10 per configuration) and multiple SIR runs with different beta values",
-    "Step 11: Statistical analysis: perform paired t-tests or Wilcoxon signed-rank tests to determine if differences in Kendall's tau between methods are statistically significant",
-    "Step 12: Generate visualizations: (a) bar plots comparing average Kendall's tau across methods for each network type, (b) line plots showing epsilon(p) vs p for different methods, (c) heatmaps showing tau values across network types and sizes, (d) box plots showing distribution of tau values across multiple runs"
+    "Step 1: Initialize simulation environment - Import networkx, numpy, scipy for network generation and analysis. Set random seeds for reproducibility.",
+    "Step 2: Generate network topologies - Create multiple network instances for each topology type (BA scale-free, WS small-world, ER random) with varying parameters. Store adjacency matrices and degree sequences.",
+    "Step 3: Perform k-shell decomposition - For each network, implement k-shell decomposition algorithm tracking iter(i) for each node (iteration number when node is removed). Compute ks_i (shell value) for all nodes.",
+    "Step 4: Calculate position attribute PN_p(i) - Apply sigmoid function p(i) = 1/(1 + exp(-sqrt(iter(i)))) to iteration values. Compute PN_p(i) = ks_i + sum of p(j) over all neighbors j of node i.",
+    "Step 5: Calculate neighbor attribute PN_n(i) - For each node i, sum the degrees of all second-order neighbors: PN_n(i) = sum over neighbors j of (sum of degrees k_l of neighbors l of j).",
+    "Step 6: Compute information entropy weights - Normalize PN_p and PN_n values to get r_{1j} and r_{2j}. Calculate entropies H_1 and H_2 using formula H_i = -(1/ln(n)) * sum(r_{ij} * ln(r_{ij})). Derive weights w_1 = (1-H_1)/(2-(H_1+H_2)) and w_2 = (1-H_2)/(2-(H_1+H_2)).",
+    "Step 7: Generate node rankings for different weighting schemes - Entropy-weighted: PN(i) = w_1*PN_p(i) + w_2*PN_n(i). Equal-weighted: PN(i) = 0.5*PN_p(i) + 0.5*PN_n(i). Position-only: PN(i) = PN_p(i). Neighbor-only: PN(i) = PN_n(i). Rank nodes in descending order for each scheme.",
+    "Step 8: Run SIR simulations - For each node i as initial spreader, run SIR model with parameters beta and gamma. Use discrete-time stochastic SIR: at each time step, infected nodes infect susceptible neighbors with probability beta, and recover with probability gamma. Run multiple Monte Carlo simulations (100-1000 runs) for each initial spreader.",
+    "Step 9: Calculate propagation capability F(i) - For each node i, compute F(i) as the average final outbreak size (total number of recovered nodes at end of simulation) across all Monte Carlo runs when i is the initial spreader. Rank nodes by F(i) in descending order to get ground truth ranking.",
+    "Step 10: Compute Kendall's tau correlation - For each weighting scheme, calculate Kendall's tau coefficient between the predicted ranking (from PN(i)) and the ground truth ranking (from F(i)). Kendall's tau = (n_c - n_d) / (n(n-1)/2) where n_c is concordant pairs and n_d is discordant pairs.",
+    "Step 11: Repeat for parameter variations - Iterate steps 2-10 for different network topologies, sizes, parameters, and beta values. Store all Kendall's tau values in structured arrays indexed by (topology, size, parameters, weighting_scheme, beta).",
+    "Step 12: Statistical analysis - For each combination of network type and parameters, compute mean and standard deviation of Kendall's tau across multiple network realizations. Perform statistical tests (e.g., paired t-test) to determine if entropy-weighted method significantly outperforms other methods.",
+    "Step 13: Generate visualizations - Create bar plots comparing Kendall's tau for different weighting schemes across network types. Generate heatmaps showing performance variation with network parameters. Plot Kendall's tau vs beta for each method. Create scatter plots of predicted rank vs actual rank for visual assessment of ranking quality.",
+    "Step 14: Validate hypothesis - Compare entropy-weighted method against baselines. Hypothesis is supported if entropy-weighted consistently achieves higher Kendall's tau (statistically significant) across diverse network topologies and parameters."
   ],
-  "expected_outcomes": "The simulation should reveal that the proposed PN method achieves significantly higher Kendall's tau correlation coefficients (closer to 1.0) with SIR model propagation outcomes compared to both baseline methods across all network topologies. Specifically: (1) k-shell only method should show moderate correlation (tau approximately 0.4-0.6) as it captures basic structural importance but lacks refinement, (2) k-shell with first-order neighbors should show improved correlation (tau approximately 0.6-0.75) by incorporating immediate neighborhood information, (3) proposed PN method should show highest correlation (tau approximately 0.8-0.95) by combining sigmoid-transformed iterative information, second-order neighbor degrees, and entropy-based weighting. The imprecision function epsilon(p) should be lowest for the proposed method across all values of p, indicating better identification of truly influential nodes. The improvement should be most pronounced in scale-free and small-world networks where hierarchical structure and position relative to network core are critical. Results should be consistent across different network sizes, with statistical significance (p < 0.05) confirmed through hypothesis testing. Visualization should clearly demonstrate the superiority of the multi-attribute entropy-weighted approach over simpler methods."
+  "expected_outcomes": "The simulation should reveal that the entropy-weighted method (w_1*PN_p + w_2*PN_n with information entropy-derived weights) produces node influence rankings with significantly higher Kendall's tau correlation to SIR propagation outcomes compared to equal weighting (0.5*PN_p + 0.5*PN_n), position-only (PN_p), and neighbor-only (PN_n) methods. Expected patterns: (1) Kendall's tau for entropy-weighted method should be 0.05-0.15 points higher than equal-weighted across most networks, (2) Performance advantage should be most pronounced in heterogeneous networks (scale-free BA) compared to more homogeneous networks (random ER), (3) Single-attribute methods (position-only, neighbor-only) should perform worst, demonstrating the value of combining both attributes, (4) The entropy weighting should adaptively adjust w_1 and w_2 based on network structure, with w_1 typically higher in networks where position matters more (hierarchical structures) and w_2 higher in densely connected networks, (5) Performance should be robust across different beta values, though absolute Kendall's tau may vary with infection rate, (6) Visualization should show tighter clustering of predicted vs actual ranks for entropy-weighted method compared to baselines, (7) Statistical tests should confirm significance (p < 0.05) of performance improvements across multiple network realizations."
 }

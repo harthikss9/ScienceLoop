@@ -1,0 +1,71 @@
+{
+  "simulation_equations": [
+    "KNN Classification: y_pred = mode({y_i | x_i \u2208 N_k(x_test)}), where N_k(x_test) are k nearest neighbors",
+    "Euclidean Distance: d(x_i, x_j) = sqrt(sum((x_i[f] - x_j[f])^2)) for all features f",
+    "Classification Accuracy: Acc = (TP + TN) / (TP + TN + FP + FN)",
+    "Precision: P = TP / (TP + FP)",
+    "Recall: R = TP / (TP + FN)",
+    "F1-Score: F1 = 2 * (P * R) / (P + R)",
+    "Feature Set Expansion: X_expanded = [X_base, X_nonlinear_1, X_nonlinear_2, ..., X_nonlinear_n]"
+  ],
+  "constants_required": [
+    {
+      "name": "k_neighbors",
+      "description": "Number of nearest neighbors for KNN algorithm",
+      "value_or_range": "[3, 5, 7, 9, 11] - typical values for KNN classification"
+    },
+    {
+      "name": "train_test_split_ratio",
+      "description": "Ratio for splitting dataset into training and testing sets",
+      "value_or_range": "0.7 to 0.8 for training, 0.2 to 0.3 for testing"
+    },
+    {
+      "name": "n_samples",
+      "description": "Number of voice samples in the dataset",
+      "value_or_range": "195 (as per typical PD voice datasets like Oxford Parkinson's Dataset)"
+    },
+    {
+      "name": "baseline_feature_count",
+      "description": "Number of baseline vocal features (fundamental frequency measures, amplitude measures, noise ratios)",
+      "value_or_range": "16 (typical baseline features excluding nonlinear measures)"
+    },
+    {
+      "name": "random_seed",
+      "description": "Seed for reproducibility of train-test splits and synthetic data generation",
+      "value_or_range": "42"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "n_nonlinear_features",
+      "description": "Number of nonlinear dynamical complexity measures added to the feature set (including signal fractal scaling exponent and nonlinear measures of fundamental frequency variation)",
+      "range": "[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]",
+      "units": "count"
+    },
+    {
+      "name": "feature_noise_level",
+      "description": "Standard deviation of Gaussian noise added to nonlinear features to simulate measurement variability",
+      "range": "[0.0, 0.05, 0.1, 0.15, 0.2]",
+      "units": "normalized units"
+    },
+    {
+      "name": "class_balance_ratio",
+      "description": "Ratio of PD positive to PD negative samples in synthetic dataset",
+      "range": "[0.4, 0.5, 0.6, 0.7]",
+      "units": "ratio"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Initialize simulation environment - Set random seed for reproducibility, define baseline feature count (16 features: average/max/min fundamental frequency, variation in fundamental frequency, variation in amplitude, noise-to-tonal ratio, etc.), and create synthetic PD voice dataset with known class labels (0=healthy, 1=PD) using multivariate normal distributions with different means for each class",
+    "Step 2: Create baseline feature set - Generate baseline vocal parameters (fundamental frequency measures, amplitude measures, noise ratios) with realistic distributions based on PD literature (healthy: mean fundamental frequency ~150Hz, PD: ~140Hz with higher variation)",
+    "Step 3: Implement feature expansion loop - For each value of n_nonlinear_features from 0 to 10, generate additional nonlinear complexity features (fractal scaling exponents, nonlinear fundamental frequency variation measures) with correlations to PD status, creating expanded feature matrices X_expanded",
+    "Step 4: Apply KNN classification - For each feature set configuration, split data into training (75%) and testing (25%) sets, normalize features using StandardScaler, train KNN classifier with k=5 neighbors, and predict on test set",
+    "Step 5: Compute performance metrics - Calculate accuracy, precision, recall, and F1-score for each feature set configuration, storing results in arrays indexed by n_nonlinear_features",
+    "Step 6: Perform cross-validation - Implement 5-fold cross-validation for each feature set to ensure robust accuracy estimates and compute mean and standard deviation of accuracy across folds",
+    "Step 7: Test sensitivity to noise - For each n_nonlinear_features value, add varying levels of Gaussian noise to features and measure impact on classification accuracy to assess robustness",
+    "Step 8: Vary k parameter - Test KNN with different k values [3, 5, 7, 9, 11] for each feature set to find optimal k and verify that improvement holds across different k values",
+    "Step 9: Generate visualizations - Create line plots of accuracy vs n_nonlinear_features, bar charts comparing baseline vs expanded feature sets, confusion matrices for best and worst configurations, and heatmaps showing accuracy across (n_nonlinear_features, k_neighbors) parameter space",
+    "Step 10: Statistical analysis - Perform paired t-tests comparing accuracy with baseline features vs accuracy with expanded nonlinear features to determine statistical significance of improvements, calculate effect sizes, and generate confidence intervals for accuracy improvements"
+  ],
+  "expected_outcomes": "The simulation should reveal a positive correlation between the number of nonlinear dynamical complexity measures and KNN classification accuracy for Parkinson's Disease prediction. Specifically: (1) Accuracy should increase from baseline (with 0 additional nonlinear features) as n_nonlinear_features increases from 0 to approximately 5-7 features, (2) Beyond an optimal number of features (likely 6-8), accuracy may plateau or slightly decrease due to curse of dimensionality, (3) The improvement should be statistically significant (p < 0.05) when comparing baseline to optimal feature set, (4) F1-score and recall should show similar improvement patterns, indicating better detection of PD cases, (5) Cross-validation results should show consistent improvement with reduced variance as informative nonlinear features are added, (6) The optimal k value for KNN may shift slightly with feature set expansion but the improvement trend should hold across different k values, (7) Visualization should show clear upward trend in accuracy plot with error bars indicating confidence intervals, (8) Confusion matrices should show reduced false negatives (missed PD cases) with expanded feature sets, and (9) Sensitivity analysis should demonstrate that the improvement is robust to moderate levels of feature noise (up to 0.1-0.15 standard deviation), confirming that nonlinear complexity measures provide genuine predictive value beyond baseline vocal parameters"
+}

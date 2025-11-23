@@ -1,33 +1,59 @@
 {
   "nodes": [
-    "Complex Networks",
-    "Influential Node Ranking Method",
-    "K-shell Decomposition",
-    "Iterative Information",
-    "Sigmoid Function",
+    "Influential Node Ranking",
+    "Local Neighborhood Information",
+    "Global Iteration Data",
     "Node Position Index",
-    "Position Attribute",
-    "Neighbor Attribute",
-    "Information Entropy Weighting",
-    "Experimental Simulations",
-    "SIR Model",
-    "Centrality Measures",
-    "Node Influence Score",
+    "Network Core Proximity",
+    "Position Attribute of Node",
+    "Neighbor Attribute of Node",
+    "Overall Influence Score",
     "Node Propagation Capability",
-    "Influence Spread Capability",
-    "Network Core",
-    "Node's Closeness to Network Core"
+    "SIR Model",
+    "Kendall's Coefficient",
+    "Imprecision Function",
+    "Improved Multiattribute K-Shell Method",
+    "Iterative Information",
+    "Node Attributes",
+    "Sigmoid Function",
+    "Information Entropy",
+    "Statistical Measures"
   ],
   "edges": [
     {
-      "source": "Influential Node Ranking Method",
-      "relation": "is an improvement of",
-      "target": "K-shell Decomposition"
+      "source": "Influential Node Ranking",
+      "relation": "is quantified by",
+      "target": "Local Neighborhood Information"
     },
     {
-      "source": "K-shell Decomposition",
-      "relation": "is enhanced by",
+      "source": "Influential Node Ranking",
+      "relation": "is quantified by",
+      "target": "Global Iteration Data"
+    },
+    {
+      "source": "Node Position Index",
+      "relation": "is derived from",
+      "target": "Network Core Proximity"
+    },
+    {
+      "source": "Overall Influence Score",
+      "relation": "is combined using",
+      "target": "Information Entropy"
+    },
+    {
+      "source": "Node Propagation Capability",
+      "relation": "is evaluated through",
+      "target": "SIR Model"
+    },
+    {
+      "source": "Improved Multiattribute K-Shell Method",
+      "relation": "integrates",
       "target": "Iterative Information"
+    },
+    {
+      "source": "Improved Multiattribute K-Shell Method",
+      "relation": "integrates",
+      "target": "Node Attributes"
     },
     {
       "source": "Iterative Information",
@@ -35,74 +61,24 @@
       "target": "Sigmoid Function"
     },
     {
-      "source": "Sigmoid Function",
-      "relation": "determines",
-      "target": "Node Position Index"
+      "source": "Position Attribute of Node",
+      "relation": "is combined with",
+      "target": "Neighbor Attribute of Node"
     },
     {
-      "source": "Node Position Index",
-      "relation": "increases with",
-      "target": "Number of Iterations"
+      "source": "Position Attribute of Node",
+      "relation": "is weighted by",
+      "target": "Information Entropy"
     },
     {
-      "source": "Node Position Index",
-      "relation": "indicates",
-      "target": "Node's Closeness to Network Core"
+      "source": "Neighbor Attribute of Node",
+      "relation": "is weighted by",
+      "target": "Information Entropy"
     },
     {
-      "source": "Position Attribute",
-      "relation": "combines",
-      "target": "Shell Value"
-    },
-    {
-      "source": "Position Attribute",
-      "relation": "combines",
-      "target": "Node Position Index"
-    },
-    {
-      "source": "Neighbor Attribute",
-      "relation": "aggregates",
-      "target": "Degrees of Second-order Neighbors"
-    },
-    {
-      "source": "Node Influence Score",
-      "relation": "is a weighted combination of",
-      "target": "Position Attribute"
-    },
-    {
-      "source": "Node Influence Score",
-      "relation": "is a weighted combination of",
-      "target": "Neighbor Attribute"
-    },
-    {
-      "source": "Node Influence Score",
-      "relation": "uses",
-      "target": "Information Entropy Weighting"
-    },
-    {
-      "source": "Node Propagation Capability",
+      "source": "Improved Multiattribute K-Shell Method",
       "relation": "is evaluated using",
-      "target": "SIR Model"
-    },
-    {
-      "source": "Node Propagation Capability",
-      "relation": "is assessed through",
-      "target": "Centrality Measures"
-    },
-    {
-      "source": "Influential Node Ranking Method",
-      "relation": "is validated through",
-      "target": "Experimental Simulations"
-    },
-    {
-      "source": "Experimental Simulations",
-      "relation": "use",
-      "target": "SIR Model"
-    },
-    {
-      "source": "Experimental Simulations",
-      "relation": "use",
-      "target": "Centrality Measures"
+      "target": "Statistical Measures"
     }
   ]
 }

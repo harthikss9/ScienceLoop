@@ -9,13 +9,13 @@ from spoon_ai.tools import BaseTool
 from spoon_ai.tools.base import ToolResult
 
 try:
-    from PyPDF2 import PdfReader
+    import pypdf
+    PdfReader = pypdf.PdfReader
 except ImportError:
     try:
-        import pypdf
-        PdfReader = pypdf.PdfReader
+        from PyPDF2 import PdfReader
     except ImportError:
-        raise ImportError("PyPDF2 or pypdf is required. Install with: pip install PyPDF2")
+        raise ImportError("pypdf or PyPDF2 is required. Install with: pip install pypdf")
 
 
 class PDFReaderTool(BaseTool):

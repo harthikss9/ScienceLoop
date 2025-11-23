@@ -62,22 +62,29 @@ SIMULATION PLAN:
 
 Your task:
 1. Analyze the simulation_equations, variables_to_vary, and procedure_steps
-2. Determine the dataset_type based on these rules:
+2. If ANY mention of data, datasets, loading data, generating data, sequences, samples, etc. appears:
+   → Generate appropriate dataset files (even if code might generate inline, provide files for consistency)
+
+3. Determine the dataset_type based on what data is mentioned:
 
    - If terms like "network", "topology", "scale_free", "small_world", "random",
      "Gamma(i)", "neighbors", "k-shell", "graph", "degree", "nodes", "edges" appear
      → dataset_type = "graph"
 
-   - If ODE/PDE equations appear (dS/dt, dI/dt, dR/dt, dT/dt, ∂u/∂t, differential):
-     → dataset_type = "none" (synthetic variables only, no external datasets)
-
-   - If ML dataset names appear (MNIST, CIFAR, ImageNet, training data):
+   - If ML dataset names appear (MNIST, CIFAR, ImageNet, training data, test data)
      → dataset_type = "ml"
 
-   - If chemistry/bio mentions "molecular structure", "PDB", "protein", "protein structure":
+   - If chemistry/bio mentions "molecular structure", "PDB", "protein structure"
      → dataset_type = "bio_structures"
 
-   - If nothing matches:
+   - If mentions "peptide", "sequence", "amino acid", "sequences", "samples", "data points",
+     "classification data", "labeled data", "synthetic data", "generate data"
+     → dataset_type = "synthetic" (generate synthetic dataset files)
+
+   - If mentions time series, signals, measurements, observations
+     → dataset_type = "synthetic" (generate synthetic time series)
+
+   - If nothing about data is mentioned:
      → dataset_type = "none"
 
 3. For each dataset_type, specify what needs to be generated:
@@ -97,6 +104,16 @@ Your task:
    If dataset_type = "bio_structures":
       - Specify PDB IDs if mentioned, or suggest common ones (1CRN, 1UBQ, etc.)
 
+   If dataset_type = "synthetic":
+      - Determine what type: peptide_sequences, time_series, classification_data, regression_data, etc.
+      - Extract parameters from the plan:
+        * num_samples (how many data points)
+        * sequence_length (if sequences)
+        * num_features (if feature vectors)
+        * num_classes (if classification)
+        * file_format (CSV, JSON, TXT, etc.)
+      - Specify all parameters needed to generate the dataset
+
    If dataset_type = "none":
       - Return empty datasets list
 
@@ -112,7 +129,15 @@ Return ONLY valid JSON in this exact format:
   "real_world_graphs": ["karate", "dolphins", ...] or [],
   "ml_dataset": "MNIST" or null,
   "pdb_ids": ["1CRN", ...] or [],
-  "reasoning": "Brief explanation of why this dataset_type was chosen"
+  "synthetic_type": "peptide_sequences|time_series|classification_data|regression_data|other" or null,
+  "synthetic_params": {{
+    "num_samples": 1000,
+    "sequence_length": 9,
+    "num_features": 20,
+    "num_classes": 2,
+    "file_format": "CSV"
+  }} or {{}},
+  "reasoning": "Brief explanation of why this dataset_type was chosen and what data will be generated"
 }}
 
 Return ONLY the JSON, no additional text or explanation."""
@@ -294,6 +319,137 @@ def download_pdb_files(dataset_spec: Dict[str, Any], datasets_dir: Path) -> Dict
     return datasets
 
 
+def generate_synthetic_datasets(dataset_spec: Dict[str, Any], datasets_dir: Path) -> Dict[str, str]:
+    """
+    Generate synthetic datasets based on specification (peptides, time series, classification data, etc.).
+    
+    Returns:
+        Dictionary mapping dataset names to file paths
+    """
+    datasets = {}
+    synthetic_type = dataset_spec.get("synthetic_type")
+    synthetic_params = dataset_spec.get("synthetic_params", {})
+    
+    if not synthetic_type:
+        return datasets
+    
+    synthetic_dir = datasets_dir / "synthetic"
+    synthetic_dir.mkdir(parents=True, exist_ok=True)
+    
+    num_samples = synthetic_params.get("num_samples", 1000)
+    file_format = synthetic_params.get("file_format", "CSV").upper()
+    
+    try:
+        if synthetic_type == "peptide_sequences":
+            # Amino acid alphabet
+            amino_acids = ['A', 'R', 'N', 'D', 'C', 'Q', 'E', 'G', 'H', 'I', 
+                          'L', 'K', 'M', 'F', 'P', 'S', 'T', 'W', 'Y', 'V']
+            
+            sequence_length = synthetic_params.get("sequence_length", 9)
+            num_classes = synthetic_params.get("num_classes", 2)
+            dataset_types = synthetic_params.get("dataset_types", ["dataset1"])
+            
+            if isinstance(dataset_types, str):
+                dataset_types = [dataset_types]
+            
+            for dataset_type in dataset_types:
+                positive_samples = []
+                negative_samples = []
+                samples_per_class = num_samples // (2 * len(dataset_types))
+                
+                # Generate positive samples
+                for _ in range(samples_per_class):
+                    sequence = ''.join(np.random.choice(amino_acids, size=sequence_length))
+                    positive_samples.append(sequence)
+                
+                # Generate negative samples
+                for _ in range(samples_per_class):
+                    sequence = ''.join(np.random.choice(amino_acids, size=sequence_length))
+                    negative_samples.append(sequence)
+                
+                # Save dataset
+                safe_name = str(dataset_type).replace(' ', '_').replace('-', '_')
+                if file_format == "CSV":
+                    filename = f"{safe_name}_peptides.csv"
+                    filepath = synthetic_dir / filename
+                    with open(filepath, 'w') as f:
+                        f.write("sequence,label\n")
+                        for seq in positive_samples:
+                            f.write(f"{seq},1\n")
+                        for seq in negative_samples:
+                            f.write(f"{seq},0\n")
+                else:
+                    filename = f"{safe_name}_peptides.txt"
+                    filepath = synthetic_dir / filename
+                    with open(filepath, 'w') as f:
+                        for seq in positive_samples:
+                            f.write(f"{seq}\t1\n")
+                        for seq in negative_samples:
+                            f.write(f"{seq}\t0\n")
+                
+                datasets[safe_name] = str(filepath)
+                print(f"Generated synthetic {dataset_type} dataset: {filepath} ({len(positive_samples) + len(negative_samples)} samples)", file=sys.stderr)
+        
+        elif synthetic_type == "classification_data":
+            num_features = synthetic_params.get("num_features", 20)
+            num_classes = synthetic_params.get("num_classes", 2)
+            
+            # Generate feature matrix and labels
+            X = np.random.randn(num_samples, num_features)
+            y = np.random.randint(0, num_classes, size=num_samples)
+            
+            filename = "classification_data.csv"
+            filepath = synthetic_dir / filename
+            with open(filepath, 'w') as f:
+                # Write header
+                f.write(",".join([f"feature_{i}" for i in range(num_features)] + ["label"]) + "\n")
+                # Write data
+                for i in range(num_samples):
+                    f.write(",".join([str(x) for x in X[i]] + [str(y[i])]) + "\n")
+            
+            datasets["classification_data"] = str(filepath)
+            print(f"Generated synthetic classification dataset: {filepath} ({num_samples} samples, {num_features} features)", file=sys.stderr)
+        
+        elif synthetic_type == "time_series":
+            sequence_length = synthetic_params.get("sequence_length", 100)
+            num_features = synthetic_params.get("num_features", 1)
+            
+            # Generate time series data
+            time_points = np.arange(sequence_length)
+            data = np.random.randn(num_samples, sequence_length, num_features)
+            
+            filename = "time_series_data.csv"
+            filepath = synthetic_dir / filename
+            with open(filepath, 'w') as f:
+                f.write("sample_id,time,value\n")
+                for sample_id in range(num_samples):
+                    for t in range(sequence_length):
+                        f.write(f"{sample_id},{t},{data[sample_id, t, 0]}\n")
+            
+            datasets["time_series"] = str(filepath)
+            print(f"Generated synthetic time series dataset: {filepath} ({num_samples} samples, {sequence_length} time points)", file=sys.stderr)
+        
+        else:
+            # Generic synthetic data - just create a CSV with random data
+            num_features = synthetic_params.get("num_features", 10)
+            filename = f"{synthetic_type}_data.csv"
+            filepath = synthetic_dir / filename
+            
+            X = np.random.randn(num_samples, num_features)
+            with open(filepath, 'w') as f:
+                f.write(",".join([f"feature_{i}" for i in range(num_features)]) + "\n")
+                for i in range(num_samples):
+                    f.write(",".join([str(x) for x in X[i]]) + "\n")
+            
+            datasets[synthetic_type] = str(filepath)
+            print(f"Generated synthetic {synthetic_type} dataset: {filepath} ({num_samples} samples)", file=sys.stderr)
+    
+    except Exception as e:
+        print(f"Warning: Failed to generate synthetic {synthetic_type} dataset: {e}", file=sys.stderr)
+    
+    return datasets
+
+
 async def generate_datasets(simulation_plan: Dict[str, Any], output_dir: Path) -> Dict[str, Any]:
     """
     Main function to analyze and generate/download all required datasets.
@@ -327,6 +483,10 @@ async def generate_datasets(simulation_plan: Dict[str, Any], output_dir: Path) -
     elif dataset_type == "bio_structures":
         pdb_datasets = download_pdb_files(dataset_spec, datasets_dir)
         all_datasets.update(pdb_datasets)
+    
+    elif dataset_type == "synthetic":
+        synthetic_datasets = generate_synthetic_datasets(dataset_spec, datasets_dir)
+        all_datasets.update(synthetic_datasets)
     
     elif dataset_type == "none":
         # No datasets needed

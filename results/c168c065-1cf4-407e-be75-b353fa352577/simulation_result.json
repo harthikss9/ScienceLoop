@@ -1,0 +1,22 @@
+{
+  "status": "success",
+  "run_id": "c168c065-1cf4-407e-be75-b353fa352577",
+  "stdout": "",
+  "stderr": "",
+  "exit_code": 0,
+  "artifacts": [
+    {
+      "filename": "knn_performance_metrics.png",
+      "path": "results/c168c065-1cf4-407e-be75-b353fa352577/artifacts/knn_performance_metrics.png"
+    },
+    {
+      "filename": "knn_accuracy.png",
+      "path": "results/c168c065-1cf4-407e-be75-b353fa352577/artifacts/knn_accuracy.png"
+    },
+    {
+      "filename": "classification_data.csv",
+      "path": "results/c168c065-1cf4-407e-be75-b353fa352577/artifacts/classification_data.csv"
+    }
+  ],
+  "results_path": "results/c168c065-1cf4-407e-be75-b353fa352577"
+}
