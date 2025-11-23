@@ -1,0 +1,5 @@
+{
+  "dataset_type": "none",
+  "datasets": {},
+  "reasoning": "This simulation plan involves computational modeling of protein folding kinetics using mathematical equations. All required data (temperature arrays, denaturant concentrations, thermodynamic parameters) are generated computationally within the simulation through numerical calculations, root finding, and linear regression. No external datasets, sequences, molecular structures, or pre-existing data files are needed. The simulation is entirely equation-based with parameters defined in constants_required and variables_to_vary."
+}

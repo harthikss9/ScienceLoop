@@ -1,0 +1,7 @@
+{
+  "dataset_type": "synthetic",
+  "datasets": {
+    "dataset1": "papers/mldl/datasets/synthetic/dataset1_peptides.csv"
+  },
+  "reasoning": "The simulation plan explicitly mentions generating/loading peptide datasets with sequences of length 8-15 amino acids for three classification problems (HIV-protease, T-cell epitopes, HLA binding). It requires physicochemical property matrices (20 properties \u00d7 20 amino acids) and labeled peptide samples for training and testing classifiers. The plan involves encoding peptide sequences using various methods and comparing classification performance, requiring synthetic peptide sequence datasets with binary labels for each classification task."
+}

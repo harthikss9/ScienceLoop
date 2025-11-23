@@ -1,0 +1,107 @@
+{
+  "simulation_equations": [
+    "k(T, den) = DF * exp(-((DH_U2TS - T * DS_U2TS + DCp_U2TS * (T - T0 - T * ln(T/T0)) + m_U2TS * den) / (R * T)))",
+    "DG(T, den) = DH - T * DS + DCp * (T - T0 - T * ln(T/T0)) - m * den",
+    "DH_activation_corrected = -R * d(ln(k))/d(1/T) at constant DG",
+    "DH_activation_uncorrected = -R * d(ln(k))/d(1/T) at constant den",
+    "Delta_DH_activation = DH_activation_corrected - DH_activation_uncorrected"
+  ],
+  "constants_required": [
+    {
+      "name": "R",
+      "description": "Universal gas constant",
+      "value_or_range": "8.314 J/(mol*K) or 0.001987 kcal/(mol*K)"
+    },
+    {
+      "name": "T0",
+      "description": "Reference temperature",
+      "value_or_range": "295 K"
+    },
+    {
+      "name": "DF",
+      "description": "Pre-exponential factor for folding rate",
+      "value_or_range": "1e6 to 1e8 s^-1 (typical for protein folding)"
+    },
+    {
+      "name": "DH_U2TS",
+      "description": "Enthalpy change from unfolded to transition state",
+      "value_or_range": "20 to 60 kcal/mol (typical range for protein L-like proteins)"
+    },
+    {
+      "name": "DS_U2TS",
+      "description": "Entropy change from unfolded to transition state",
+      "value_or_range": "0.05 to 0.15 kcal/(mol*K)"
+    },
+    {
+      "name": "DCp_U2TS",
+      "description": "Heat capacity change from unfolded to transition state",
+      "value_or_range": "0.3 to 1.5 kcal/(mol*K) (fraction of native state DCp)"
+    },
+    {
+      "name": "m_U2TS",
+      "description": "m-value for transition state (denaturant dependence)",
+      "value_or_range": "0.3 to 0.7 kcal/(mol*M) (fraction of native state m-value)"
+    },
+    {
+      "name": "DH",
+      "description": "Enthalpy change for native state formation",
+      "value_or_range": "40 to 80 kcal/mol"
+    },
+    {
+      "name": "DS",
+      "description": "Entropy change for native state formation",
+      "value_or_range": "0.1 to 0.25 kcal/(mol*K)"
+    },
+    {
+      "name": "DCp",
+      "description": "Heat capacity change for native state formation",
+      "value_or_range": "1.0 to 3.0 kcal/(mol*K)"
+    },
+    {
+      "name": "m",
+      "description": "m-value for native state (denaturant dependence)",
+      "value_or_range": "1.0 to 2.0 kcal/(mol*M)"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "T",
+      "description": "Absolute temperature",
+      "range": "[278, 323]",
+      "units": "K (5\u00b0C to 50\u00b0C)"
+    },
+    {
+      "name": "den",
+      "description": "Denaturant concentration",
+      "range": "[0, 6]",
+      "units": "M (molar concentration of denaturant)"
+    },
+    {
+      "name": "DG_target",
+      "description": "Target free energy of folding for constant stability conditions",
+      "range": "[-2, 2]",
+      "units": "kcal/mol"
+    },
+    {
+      "name": "DCp_U2TS_values",
+      "description": "Different heat capacity values to test proportionality",
+      "range": "[0.3, 0.6, 0.9, 1.2, 1.5]",
+      "units": "kcal/(mol*K)"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Initialize all constants (R, T0, DF, DH_U2TS, DS_U2TS, DCp_U2TS, m_U2TS, DH, DS, DCp, m) with values from the constants_required list",
+    "Step 2: Create temperature array T ranging from 278 K to 323 K with 20-30 points",
+    "Step 3: For uncorrected analysis - fix denaturant concentration (e.g., den=0 M) and compute k(T, den) for all temperatures using the folding rate equation",
+    "Step 4: For stability-corrected analysis - for each temperature T, solve for denaturant concentration den that maintains constant DG using DG(T, den) = DG_target (use numerical root finding)",
+    "Step 5: Compute k(T, den) at each (T, den) pair that satisfies constant stability condition",
+    "Step 6: Create Arrhenius plots: plot ln(k) vs 1/T for both uncorrected (constant den) and corrected (constant DG) conditions",
+    "Step 7: Perform linear regression on both plots to extract slopes: slope_uncorrected and slope_corrected",
+    "Step 8: Calculate activation enthalpies: DH_activation_uncorrected = -R * slope_uncorrected and DH_activation_corrected = -R * slope_corrected",
+    "Step 9: Compute difference: Delta_DH_activation = DH_activation_corrected - DH_activation_uncorrected",
+    "Step 10: Repeat steps 3-9 for multiple values of DCp_U2TS to test proportionality hypothesis",
+    "Step 11: Plot Delta_DH_activation vs DCp_U2TS to verify linear relationship",
+    "Step 12: Generate visualizations: (a) Arrhenius plots comparing corrected vs uncorrected, (b) ln(k) vs T at constant DG, (c) denaturant concentration vs temperature along constant stability contours, (d) Delta_DH_activation vs DCp_U2TS showing proportionality"
+  ],
+  "expected_outcomes": "The simulation should reveal: (1) Linear Arrhenius plots (ln(k) vs 1/T) under constant stability conditions (constant DG), confirming the hypothesis that stability-corrected kinetics follow simple Arrhenius behavior. (2) Non-linear or different slope Arrhenius plots at constant denaturant concentration (uncorrected), demonstrating the effect of stability changes. (3) Systematic differences between corrected and uncorrected activation enthalpies (Delta_DH_activation), with corrected values being more accurate representations of the intrinsic folding barrier. (4) A linear relationship between Delta_DH_activation and DCp_U2TS, confirming that the difference in activation enthalpies is proportional to the heat capacity change of the transition state. (5) The magnitude of Delta_DH_activation should scale with the temperature range and DCp_U2TS value, typically ranging from 5-20 kcal/mol for protein L-like systems. (6) Constant stability contours in (T, den) space should show increasing denaturant concentration with increasing temperature to maintain constant DG, reflecting the temperature-dependent stabilization forces."
+}

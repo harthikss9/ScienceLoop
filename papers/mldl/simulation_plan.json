@@ -1,0 +1,85 @@
+{
+  "simulation_equations": [
+    "Pp_20+k = (1 / (M - k)) * sum_{a=1}^{M-k} [val(p, A_a) - val(p, A_{a+k})]",
+    "AUC = integral of TPR over FPR from 0 to 1",
+    "EUC = 1 - AUC",
+    "Accuracy_improvement = (AUC_novel - AUC_traditional) / AUC_traditional * 100"
+  ],
+  "constants_required": [
+    {
+      "name": "num_physicochemical_properties",
+      "description": "Number of physicochemical properties used for encoding (e.g., hydrophobicity, charge, polarity, etc.)",
+      "value_or_range": "20 (as indicated by Pp_20+k notation in the paper)"
+    },
+    {
+      "name": "num_amino_acids",
+      "description": "Number of standard amino acids",
+      "value_or_range": "20"
+    },
+    {
+      "name": "num_samples_per_class",
+      "description": "Number of peptide samples per class for training and testing",
+      "value_or_range": "100-1000 per class"
+    },
+    {
+      "name": "train_test_split_ratio",
+      "description": "Ratio for splitting data into training and testing sets",
+      "value_or_range": "0.7-0.8 for training"
+    },
+    {
+      "name": "num_pca_components",
+      "description": "Number of principal components to retain in PCA transformation",
+      "value_or_range": "5-15 components"
+    },
+    {
+      "name": "nlf_hidden_units",
+      "description": "Number of hidden units for nonlinear feature transformation",
+      "value_or_range": "10-50 units"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "peptide_sequence_length",
+      "description": "Length M of peptide sequences to be classified",
+      "range": "[8, 9, 10, 11, 12, 13, 14, 15]",
+      "units": "amino acids"
+    },
+    {
+      "name": "encoding_method",
+      "description": "Type of encoding method used for peptide representation",
+      "range": "['traditional_binary', 'traditional_blosum', 'novel_pca_physicochemical', 'novel_nlf_physicochemical']",
+      "units": "categorical"
+    },
+    {
+      "name": "k_lag_parameter",
+      "description": "Lag parameter k for computing pseudo amino acid composition features",
+      "range": "[1, 2, 3, 4, 5]",
+      "units": "positions"
+    },
+    {
+      "name": "classification_problem",
+      "description": "Type of peptide classification task",
+      "range": "['HIV_protease', 'T_cell_epitopes', 'HLA_binding']",
+      "units": "categorical"
+    },
+    {
+      "name": "physicochemical_property_subset",
+      "description": "Subset of physicochemical properties used for encoding",
+      "range": "['all_20', 'top_10_variance', 'top_5_correlation']",
+      "units": "categorical"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Initialize simulation environment - Load or generate synthetic peptide datasets with sequence lengths 8-15 amino acids for three classification problems (HIV-protease, T-cell epitopes, HLA binding). Create physicochemical property matrix (20 properties \u00d7 20 amino acids) with normalized values between 0 and 1.",
+    "Step 2: Implement traditional encoding methods - (a) Binary encoding: 20-dimensional one-hot encoding per amino acid position, resulting in M\u00d720 dimensional vectors. (b) BLOSUM encoding: Use BLOSUM62 matrix values for each amino acid, resulting in M\u00d720 dimensional vectors.",
+    "Step 3: Implement novel encoding methods with physicochemical properties - For each peptide of length M and each physicochemical property p: (a) Compute base features: val(p, A_a) for positions a=1 to M (M features per property). (b) Compute pseudo amino acid composition features using Pp_20+k = (1/(M-k)) * sum_{a=1}^{M-k}[val(p, A_a) - val(p, A_{a+k})] for k=1 to 5. (c) Concatenate all features across 20 properties to create raw feature vector.",
+    "Step 4: Apply supervised feature transformation - (a) PCA method: Fit PCA on training data with varying number of components (5, 10, 15), transform both training and test data. (b) NLF method: Train a shallow neural network (1 hidden layer with 10-50 units) on training data labels, extract hidden layer activations as transformed features.",
+    "Step 5: Train classifiers for each encoding method - Use Support Vector Machine (SVM) with RBF kernel as the base classifier. Train separate models for each combination of: encoding method, sequence length, classification problem, and transformation parameters. Use 5-fold cross-validation on training set for hyperparameter tuning.",
+    "Step 6: Evaluate classification performance - For each trained model: (a) Generate predictions on test set. (b) Compute ROC curve by varying classification threshold. (c) Calculate AUC by numerical integration of TPR vs FPR. (d) Compute EUC = 1 - AUC. (e) Store AUC values for comparison.",
+    "Step 7: Compare novel vs traditional methods - For each sequence length and classification problem: (a) Calculate mean AUC for traditional methods (binary, BLOSUM). (b) Calculate mean AUC for novel methods (PCA-physicochemical, NLF-physicochemical). (c) Compute percentage improvement: ((AUC_novel - AUC_traditional) / AUC_traditional) \u00d7 100. (d) Test if improvement \u2265 5% threshold specified in hypothesis.",
+    "Step 8: Statistical significance testing - Perform paired t-tests comparing AUC distributions between novel and traditional methods across multiple random train-test splits (n=30 repetitions). Calculate p-values and confidence intervals for the improvement metric.",
+    "Step 9: Generate visualizations - (a) Plot AUC vs sequence length for all encoding methods (line plot with error bars). (b) Create bar charts comparing AUC across encoding methods for each classification problem. (c) Generate heatmaps showing percentage improvement of novel methods over traditional methods across sequence lengths and classification problems. (d) Plot ROC curves for best-performing novel vs traditional methods. (e) Create box plots showing AUC distribution across multiple runs.",
+    "Step 10: Analyze feature importance - For novel methods: (a) Compute correlation between individual physicochemical properties and classification accuracy. (b) Visualize which properties contribute most to improved performance. (c) Analyze how different k-lag parameters affect encoding effectiveness."
+  ],
+  "expected_outcomes": "The simulation should reveal that novel peptide encoding methods incorporating supervised feature transformation (PCA or NLF) applied to physicochemical properties achieve at least 5% higher AUC compared to traditional encoding methods (binary, BLOSUM) across peptide sequences of length 8-15 amino acids. Specifically: (1) AUC values for novel methods should range from 0.80-0.95, while traditional methods should range from 0.70-0.85. (2) The improvement should be consistent across all three classification problems (HIV-protease, T-cell epitopes, HLA binding), with some variation in magnitude. (3) The advantage of novel methods should be more pronounced for intermediate sequence lengths (10-12 amino acids) where physicochemical patterns are most informative. (4) PCA-based encoding should show slightly better performance than NLF for smaller datasets, while NLF may excel with larger training sets. (5) Pseudo amino acid composition features (Pp_20+k with k=1-3) should contribute significantly to improved discrimination. (6) Statistical tests should confirm significance (p < 0.05) of the improvement. (7) Visualizations should clearly show separation between novel and traditional method performance curves, with minimal overlap in confidence intervals. (8) Feature importance analysis should identify 5-8 key physicochemical properties (likely including hydrophobicity, charge, and secondary structure propensity) that drive the performance gains."
+}

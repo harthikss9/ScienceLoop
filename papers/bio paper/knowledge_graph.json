@@ -1,0 +1,68 @@
+{
+  "nodes": [
+    "Temperature",
+    "Denaturant concentration",
+    "Folding rate",
+    "Free energy of folding",
+    "Stability-corrected Arrhenius plots",
+    "Temperature dependence of protein folding kinetics",
+    "Non-Arrhenius behavior of protein folding kinetics",
+    "Interactions that stabilize proteins",
+    "Model of temperature and denaturant dependences of folding kinetics",
+    "Logarithm of the folding rate",
+    "Inverse temperature",
+    "Constant stability conditions"
+  ],
+  "edges": [
+    {
+      "source": "Folding rate",
+      "relation": "is exponentially dependent on",
+      "target": "Inverse temperature"
+    },
+    {
+      "source": "Folding rate",
+      "relation": "is exponentially dependent on",
+      "target": "Denaturant concentration"
+    },
+    {
+      "source": "Free energy of folding",
+      "relation": "influences",
+      "target": "Folding rate"
+    },
+    {
+      "source": "Free energy of folding",
+      "relation": "is a function of",
+      "target": "Temperature"
+    },
+    {
+      "source": "Free energy of folding",
+      "relation": "is a function of",
+      "target": "Denaturant concentration"
+    },
+    {
+      "source": "Stability-corrected Arrhenius plots",
+      "relation": "suggest",
+      "target": "Simple temperature dependence of folding kinetics under constant stability conditions"
+    },
+    {
+      "source": "Temperature dependence of protein folding kinetics",
+      "relation": "can be simplified to an Arrhenius form when corrected for",
+      "target": "Effects of protein stability"
+    },
+    {
+      "source": "Non-Arrhenius behavior of protein folding kinetics",
+      "relation": "is attributed to",
+      "target": "Temperature dependence of interactions that stabilize proteins"
+    },
+    {
+      "source": "Model of temperature and denaturant dependences of folding kinetics",
+      "relation": "shows that",
+      "target": "Logarithm of the folding rate"
+    },
+    {
+      "source": "Logarithm of the folding rate",
+      "relation": "is nearly a linear function of",
+      "target": "Inverse temperature along constant stability contours"
+    }
+  ]
+}

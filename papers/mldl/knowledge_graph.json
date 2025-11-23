@@ -1,0 +1,85 @@
+{
+  "nodes": [
+    "Physicochemical Properties of Amino Acids",
+    "Peptide Encoding Methods",
+    "Classification Accuracy",
+    "Peptide Classification Systems",
+    "Ensemble Methods",
+    "Feature Sets",
+    "Supervised Feature Transformation",
+    "Principal Component Analysis (PCA)",
+    "Nonlinear Feature Transformation (NLF)",
+    "Traditional Encoding Methods",
+    "Error Under the ROC Curve",
+    "Area Under the ROC Curve",
+    "Novel Peptide Encoding Methods",
+    "Existing Encoding Techniques",
+    "Datasets",
+    "Classification Problems",
+    "HIV-Protease Classification",
+    "T-cell Epitopes Classification",
+    "Human Leukocyte Antigens Binding Peptides Classification"
+  ],
+  "edges": [
+    {
+      "source": "Physicochemical Properties of Amino Acids",
+      "relation": "influence",
+      "target": "Effectiveness of Peptide Encodings in Classification Tasks"
+    },
+    {
+      "source": "Peptide Classification Systems",
+      "relation": "can be enhanced by",
+      "target": "Using Ensemble Methods"
+    },
+    {
+      "source": "Peptide Classification Systems",
+      "relation": "can be enhanced by",
+      "target": "Using Different Feature Sets"
+    },
+    {
+      "source": "Novel Peptide Encoding Methods",
+      "relation": "improve",
+      "target": "Classification Accuracy"
+    },
+    {
+      "source": "Novel Peptide Encoding Methods",
+      "relation": "are based on",
+      "target": "Physicochemical Properties of Amino Acids"
+    },
+    {
+      "source": "Novel Peptide Encoding Methods",
+      "relation": "are based on",
+      "target": "Supervised Feature Transformation"
+    },
+    {
+      "source": "Supervised Feature Transformation",
+      "relation": "includes",
+      "target": "Principal Component Analysis (PCA)"
+    },
+    {
+      "source": "Supervised Feature Transformation",
+      "relation": "includes",
+      "target": "Nonlinear Feature Transformation (NLF)"
+    },
+    {
+      "source": "Novel Peptide Encoding Methods",
+      "relation": "show superior performance in",
+      "target": "Classification Tasks"
+    },
+    {
+      "source": "Novel Peptide Encoding Methods",
+      "relation": "compared to",
+      "target": "Traditional Encoding Methods"
+    },
+    {
+      "source": "Existing Encoding Techniques",
+      "relation": "compared with",
+      "target": "Novel Peptide Encoding Methods"
+    },
+    {
+      "source": "Error Under the ROC Curve",
+      "relation": "is calculated as",
+      "target": "1 minus Area Under the ROC Curve"
+    }
+  ]
+}

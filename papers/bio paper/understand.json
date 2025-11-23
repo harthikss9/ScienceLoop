@@ -1,0 +1,30 @@
+{
+  "summary": "This paper investigates the temperature dependence of protein folding kinetics, focusing on the Arrhenius behavior when adjusted for protein stability effects. By analyzing the folding kinetics of protein L and correcting for temperature effects on protein stability, the study demonstrates a linear relationship between the logarithm of the folding rate and the inverse of temperature. The findings suggest that the non-Arrhenius behavior observed in protein folding kinetics is primarily due to the temperature dependence of the forces driving folding.",
+  "formulas": [
+    "k(T, den) = DF * exp(-((DH_U2TS - T * DS_U2TS + DCp_U2TS * (T0 - T) * ln(T/T0) + m_U2TS * den) / (R * T)))",
+    "DG(T, den) = DG(T) - m * den = DH - T * DS + DCp * (T - T0 - T * ln(T/T0)) - m * den",
+    "rate = D * exp(-DG_TS / (R * T))"
+  ],
+  "relationships": [
+    "The folding rate is exponentially dependent on the inverse temperature and denaturant concentration.",
+    "The free energy of folding (DG) is a function of temperature and denaturant concentration, influencing the folding kinetics.",
+    "The stability-corrected Arrhenius plots (ln k vs 1/T) are linear, suggesting a simple temperature dependence of folding kinetics under constant stability conditions."
+  ],
+  "variables": [
+    "k(T, den): rate constant for folding/unfolding at temperature T and denaturant concentration den",
+    "DF: pre-exponential factor in the Arrhenius equation",
+    "DH_U2TS, DS_U2TS, DCp_U2TS, m_U2TS: enthalpy, entropy, heat capacity change, and m-value for the folding transition state",
+    "R: universal gas constant",
+    "T: absolute temperature",
+    "T0: reference temperature (295 K)",
+    "DG(T, den): free energy of folding at temperature T and denaturant concentration den",
+    "DH, DS, DCp, m: enthalpy, entropy, heat capacity change, and m-value for the overall folding process",
+    "D: pre-exponential factor in the transition state theory expression for rate",
+    "DG_TS: free energy of activation for the transition state"
+  ],
+  "key_ideas": [
+    "The temperature dependence of protein folding kinetics can be simplified to an Arrhenius form when corrected for the effects of protein stability.",
+    "The non-Arrhenius behavior of protein folding kinetics is attributed to the temperature dependence of interactions that stabilize proteins.",
+    "A model combining the temperature and denaturant dependences of folding kinetics shows that the logarithm of the folding rate is nearly a linear function of the inverse temperature along constant stability contours."
+  ]
+}
