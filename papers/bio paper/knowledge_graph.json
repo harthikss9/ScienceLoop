@@ -2,63 +2,64 @@
   "nodes": [
     "Temperature",
     "Folding rate",
+    "Free energy change of the transition state",
+    "Inverse temperature",
     "Protein stability",
-    "Denaturant concentration",
-    "Hydrophobic interaction",
-    "Energy landscape",
-    "Arrhenius behavior of protein folding",
-    "Non-Arrhenius behavior of protein folding kinetics",
-    "Configurational diffusion constant",
-    "Free energy change at the transition state",
-    "Temperature dependence of the folding rate",
+    "Arrhenius equation",
+    "Free energy change overall",
+    "Activation energy for configurational diffusion",
     "Protein folding kinetics",
-    "Protein L stability"
+    "Non-Arrhenius behavior",
+    "Temperature dependence of interactions stabilizing proteins",
+    "Stability-corrected Arrhenius plots",
+    "Invariant landscape features under constant stability",
+    "Relationship between activation parameters and thermodynamic parameters"
   ],
   "edges": [
     {
-      "source": "Temperature dependence of the folding rate",
-      "relation": "is strongly non-Arrhenius due to",
-      "target": "quadratic argument of the exponential in the rate transition formula"
-    },
-    {
-      "source": "Non-Arrhenius behavior of protein folding kinetics",
-      "relation": "is influenced by",
-      "target": "Temperature dependence of the hydrophobic interaction"
-    },
-    {
-      "source": "Protein L stability",
-      "relation": "affects",
-      "target": "Folding rate"
+      "source": "Folding rate",
+      "relation": "is exponentially dependent on",
+      "target": "Inverse temperature"
     },
     {
       "source": "Folding rate",
-      "relation": "is modeled by",
-      "target": "adjusting the denaturant concentration to maintain constant stability"
+      "relation": "is exponentially dependent on",
+      "target": "Free energy change of the transition state"
     },
     {
-      "source": "Protein folding kinetics",
-      "relation": "exhibits",
-      "target": "Arrhenius behavior of protein folding when corrected for the temperature dependence of protein stability"
-    },
-    {
-      "source": "Non-Arrhenius temperature dependence of protein folding",
-      "relation": "can be explained by",
-      "target": "configurational diffusion on a rough energy landscape"
-    },
-    {
-      "source": "Non-Arrhenius temperature dependence of protein folding",
-      "relation": "can be explained by",
-      "target": "Temperature dependence of the hydrophobic interactions"
+      "source": "Logarithm of the folding rate",
+      "relation": "linearly depends on",
+      "target": "Inverse temperature"
     },
     {
       "source": "Stability-corrected Arrhenius plots",
       "relation": "provide insights into",
-      "target": "fundamental aspects of protein folding"
+      "target": "Activation energy for configurational diffusion"
     },
     {
-      "source": "Configurational diffusion constant",
-      "relation": "has an Arrhenius temperature dependence",
-      "target": "Temperature"
+      "source": "Protein folding kinetics",
+      "relation": "exhibit",
+      "target": "Arrhenius temperature dependence"
+    },
+    {
+      "source": "Protein folding kinetics",
+      "relation": "are corrected for",
+      "target": "Temperature dependence of protein stability"
+    },
+    {
+      "source": "Non-Arrhenius behavior",
+      "relation": "is attributed to",
+      "target": "Temperature dependence of interactions stabilizing proteins"
+    },
+    {
+      "source": "Stability-corrected Arrhenius plots",
+      "relation": "are interpreted by two models",
+      "target": "Invariant landscape features under constant stability"
+    },
+    {
+      "source": "Stability-corrected Arrhenius plots",
+      "relation": "are interpreted by two models",
+      "target": "Relationship between activation parameters and thermodynamic parameters"
     }
   ]
 }

@@ -1,0 +1,102 @@
+{
+  "simulation_equations": [
+    "Q = Mdot / (Vinf * R^1.5)",
+    "Dmom = Mdot * Vinf * sqrt(R)",
+    "L = 4 * pi * sigma * R^2 * T^4",
+    "v(r) = Vinf * (1 - R/r)^beta",
+    "EW_HeII = f(Mdot, beta, Vinf, R, T)",
+    "log(Dmom / (L/c)) = x_WLR * log(L/L_solar) + D_WLR(Z)"
+  ],
+  "constants_required": [
+    {
+      "name": "sigma",
+      "description": "Stefan-Boltzmann constant",
+      "value_or_range": "5.670374419e-8 W m^-2 K^-4"
+    },
+    {
+      "name": "c",
+      "description": "Speed of light",
+      "value_or_range": "2.998e8 m/s"
+    },
+    {
+      "name": "L_solar",
+      "description": "Solar luminosity",
+      "value_or_range": "3.828e26 W"
+    },
+    {
+      "name": "R_solar",
+      "description": "Solar radius",
+      "value_or_range": "6.957e8 m"
+    },
+    {
+      "name": "M_solar",
+      "description": "Solar mass",
+      "value_or_range": "1.989e30 kg"
+    },
+    {
+      "name": "x_WLR",
+      "description": "Slope of the wind momentum-luminosity relationship",
+      "value_or_range": "1.8 to 2.0 (typical for O-type stars)"
+    },
+    {
+      "name": "D_WLR",
+      "description": "Metallicity-dependent offset in WLR",
+      "value_or_range": "function of Z, approximately 0.6 * log(Z/Z_solar) for low metallicity"
+    },
+    {
+      "name": "T_eff",
+      "description": "Effective temperature for O6.5 III star",
+      "value_or_range": "38000 K (typical for O6.5 III)"
+    },
+    {
+      "name": "R_star",
+      "description": "Stellar radius for GHV-62024",
+      "value_or_range": "10.0 R_solar (from paper context)"
+    },
+    {
+      "name": "Vinf_base",
+      "description": "Terminal wind velocity",
+      "value_or_range": "1500 km/s (typical for O-type stars at low metallicity)"
+    },
+    {
+      "name": "Z",
+      "description": "Metallicity relative to solar",
+      "value_or_range": "0.1 Z_solar (IC1613 metallicity, Z < 0.2 Z_solar)"
+    }
+  ],
+  "variables_to_vary": [
+    {
+      "name": "beta",
+      "description": "Exponent of the wind velocity law",
+      "range": "[0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0]",
+      "units": "dimensionless"
+    },
+    {
+      "name": "Mdot",
+      "description": "Mass-loss rate adjusted to maintain constant Q-parameter",
+      "range": "computed from Q constraint for each beta",
+      "units": "M_solar/yr"
+    },
+    {
+      "name": "Q_target",
+      "description": "Target Q-parameter to maintain constant",
+      "range": "[1e-8, 5e-8, 1e-7] M_solar yr^-1 / (km/s * R_solar^1.5)",
+      "units": "M_solar yr^-1 / (km/s * R_solar^1.5)"
+    }
+  ],
+  "procedure_steps": [
+    "Step 1: Initialize constants (sigma, c, L_solar, R_solar, M_solar, T_eff, R_star, Vinf_base, Z) and convert units to SI where necessary",
+    "Step 2: Calculate stellar luminosity L using L = 4 * pi * sigma * R_star^2 * T_eff^4",
+    "Step 3: For each Q_target value in the range, create a parameter sweep loop",
+    "Step 4: For each beta value in [0.8, 1.0, 1.2, 1.4, 1.6, 1.8, 2.0], calculate the required Mdot using Mdot = Q_target * Vinf_base * R_star^1.5",
+    "Step 5: Calculate the modified wind momentum Dmom = Mdot * Vinf_base * sqrt(R_star)",
+    "Step 6: Verify WLR consistency by computing log(Dmom / (L/c)) and comparing with x_WLR * log(L/L_solar) + D_WLR(Z)",
+    "Step 7: Model the wind velocity profile v(r) = Vinf_base * (1 - R_star/r)^beta for radial distances r from 1.0*R_star to 10.0*R_star",
+    "Step 8: Calculate a proxy for He II 4686 emission line equivalent width using EW_HeII_proxy = integral over wind of emission function proportional to (Mdot * rho(r)^2 * ionization_fraction(r)) where rho(r) scales with Mdot/(4*pi*r^2*v(r))",
+    "Step 9: For simplified emission calculation, use EW_HeII_proxy = k * Mdot^alpha * beta^gamma where k is normalization constant, alpha ~ 1.5-2.0 (emission scales superlinearly with density), gamma ~ -0.5 to -1.0 (higher beta reduces inner wind density and emission)",
+    "Step 10: Store results for each (beta, Q_target) combination: beta, Mdot, Dmom, WLR_deviation, EW_HeII_proxy",
+    "Step 11: Generate visualizations: (a) EW_HeII_proxy vs beta for each Q_target, (b) Mdot vs beta for each Q_target, (c) WLR deviation vs beta, (d) wind velocity profiles v(r) for different beta values",
+    "Step 12: Calculate percentage change in EW_HeII_proxy between beta=0.8 and beta=2.0 to quantify the measurable decrease predicted by the hypothesis"
+  ],
+  "expected_outcomes": "The simulation should reveal: (1) A measurable decrease in He II 4686 emission line equivalent width (EW_HeII_proxy) as beta increases from 0.8 to 2.0, with the decrease being approximately 20-50% based on the slower inner wind acceleration reducing emission region density; (2) Mass-loss rate Mdot increases proportionally with beta to maintain constant Q-parameter, demonstrating the interdependence between Mdot and beta; (3) The modified wind momentum Dmom remains consistent with the wind momentum-luminosity relationship across all beta values, with deviations less than 0.1-0.2 dex, confirming that the WLR is maintained despite varying beta; (4) Wind velocity profiles show progressively slower acceleration in the inner wind (r < 3R_star) as beta increases, with higher beta values producing more extended acceleration zones; (5) The relationship holds across different Q_target values, indicating robustness of the beta-EW relationship in low-metallicity environments (Z < 0.2 Z_solar); (6) The results should demonstrate that high beta values (approaching 2.0) are physically consistent with observed stellar wind properties and WLR constraints, supporting the hypothesis that this may be a general property of low-metallicity O-type stellar winds rather than unique to GHV-62024"
+}

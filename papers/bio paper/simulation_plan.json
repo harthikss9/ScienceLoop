@@ -1,10 +1,12 @@
 {
   "simulation_equations": [
-    "DG(T, den) = DH - T * DS + DCp * ((T - T0) - T * ln(T / T0)) - m * den",
-    "ln(rate) = ln(D0) + DEa / (R * T) - (m_TS / m) * DG(T, den) / (R * T)",
-    "den_constant_stability = (DH - T * DS + DCp * ((T - T0) - T * ln(T / T0)) - DG_target) / m",
-    "ln(rate_constant_stability) = ln(D0) + DEa / (R * T) - (m_TS / m) * DG_target / (R * T)",
-    "Arrhenius_slope = DEa / R + (m_TS / m) * DG_target / R"
+    "k(T, [den]) = D_F * exp(-1/(R*T) * (\u0394H_U2TS - T*\u0394S_U2TS + \u0394Cp_U2TS*(T - T_0 - T*ln(T/T_0)) - m_U2TS*[den]))",
+    "\u0394G(T, [den]) = \u0394H - T*\u0394S + \u0394Cp*(T - T_0 - T*ln(T/T_0)) - m*[den]",
+    "ln(k) = ln(D_0) + \u0394E_a/(R*T) - \u0394G_TS/(R*T)",
+    "\u0394G_TS(T, [den]) = \u0394H_U2TS - T*\u0394S_U2TS + \u0394Cp_U2TS*(T - T_0 - T*ln(T/T_0)) - m_U2TS*[den]",
+    "Stability-corrected: For constant \u0394G(T, [den]) = \u0394G_target, solve for [den](T) = (\u0394H - T*\u0394S + \u0394Cp*(T - T_0 - T*ln(T/T_0)) - \u0394G_target)/m",
+    "ln(k_corrected) = ln(k(T, [den](T))) computed at each T where \u0394G = \u0394G_target",
+    "Slope of stability-corrected plot: d(ln(k))/d(1/T) at constant \u0394G \u2248 \u0394E_a/R - (m_TS/m)*\u0394G_target/R"
   ],
   "constants_required": [
     {
@@ -13,78 +15,153 @@
       "value_or_range": "8.314 J/(mol*K) or 0.001987 kcal/(mol*K)"
     },
     {
-      "name": "T0",
+      "name": "T_0",
       "description": "Reference temperature for thermodynamic calculations",
       "value_or_range": "298.15 K (25\u00b0C)"
     },
     {
-      "name": "DH",
-      "description": "Enthalpy change of folding at reference temperature",
-      "value_or_range": "Typical range: -20 to -60 kcal/mol for small proteins"
+      "name": "\u0394H_protein1",
+      "description": "Enthalpy change for unfolding of protein 1",
+      "value_or_range": "40-80 kcal/mol (typical range for small proteins)"
     },
     {
-      "name": "DS",
-      "description": "Entropy change of folding at reference temperature",
-      "value_or_range": "Typical range: -0.05 to -0.20 kcal/(mol*K)"
+      "name": "\u0394S_protein1",
+      "description": "Entropy change for unfolding of protein 1",
+      "value_or_range": "0.12-0.25 kcal/(mol*K)"
     },
     {
-      "name": "DCp",
-      "description": "Heat capacity change of folding",
-      "value_or_range": "Typical range: -0.5 to -2.0 kcal/(mol*K) for small proteins"
+      "name": "\u0394Cp_protein1",
+      "description": "Heat capacity change for unfolding of protein 1",
+      "value_or_range": "1.0-2.5 kcal/(mol*K)"
     },
     {
-      "name": "m",
-      "description": "m-value for denaturant dependence of stability",
-      "value_or_range": "Typical range: 1.0 to 3.0 kcal/(mol*M) for urea or GdmCl"
+      "name": "m_protein1",
+      "description": "Denaturant dependence parameter for protein 1",
+      "value_or_range": "1.5-3.0 kcal/(mol*M)"
     },
     {
-      "name": "m_TS",
-      "description": "m-value for the transition state",
-      "value_or_range": "Typically 0.5 to 0.8 times m (fractional value)"
+      "name": "\u0394H_U2TS_protein1",
+      "description": "Enthalpy change from unfolded to transition state for protein 1",
+      "value_or_range": "0.6-0.8 * \u0394H_protein1"
     },
     {
-      "name": "D0",
-      "description": "Pre-exponential factor for configurational diffusion constant",
-      "value_or_range": "Typical range: 10^5 to 10^7 s^-1"
+      "name": "\u0394S_U2TS_protein1",
+      "description": "Entropy change from unfolded to transition state for protein 1",
+      "value_or_range": "0.6-0.8 * \u0394S_protein1"
     },
     {
-      "name": "DEa",
-      "description": "Activation energy for configurational diffusion",
-      "value_or_range": "Typical range: 2 to 10 kcal/mol"
+      "name": "\u0394Cp_U2TS_protein1",
+      "description": "Heat capacity change from unfolded to transition state for protein 1",
+      "value_or_range": "0.6-0.8 * \u0394Cp_protein1"
     },
     {
-      "name": "DG_target",
-      "description": "Target free energy of folding to maintain constant stability",
-      "value_or_range": "Typical range: -3 to -8 kcal/mol for stable proteins"
+      "name": "m_U2TS_protein1",
+      "description": "Denaturant dependence from unfolded to transition state for protein 1",
+      "value_or_range": "0.6-0.8 * m_protein1"
+    },
+    {
+      "name": "D_F_protein1",
+      "description": "Pre-exponential factor for protein 1 folding rate",
+      "value_or_range": "1e6-1e8 s^-1"
+    },
+    {
+      "name": "\u0394E_a_protein1",
+      "description": "Activation energy for configurational diffusion for protein 1",
+      "value_or_range": "3-8 kcal/mol (to be tested for universality)"
+    },
+    {
+      "name": "\u0394H_protein2",
+      "description": "Enthalpy change for unfolding of protein 2 (different stability)",
+      "value_or_range": "50-90 kcal/mol"
+    },
+    {
+      "name": "\u0394S_protein2",
+      "description": "Entropy change for unfolding of protein 2",
+      "value_or_range": "0.15-0.28 kcal/(mol*K)"
+    },
+    {
+      "name": "\u0394Cp_protein2",
+      "description": "Heat capacity change for unfolding of protein 2",
+      "value_or_range": "1.2-2.8 kcal/(mol*K)"
+    },
+    {
+      "name": "m_protein2",
+      "description": "Denaturant dependence parameter for protein 2",
+      "value_or_range": "1.8-3.5 kcal/(mol*M)"
+    },
+    {
+      "name": "\u0394H_U2TS_protein2",
+      "description": "Enthalpy change from unfolded to transition state for protein 2",
+      "value_or_range": "0.6-0.8 * \u0394H_protein2"
+    },
+    {
+      "name": "\u0394S_U2TS_protein2",
+      "description": "Entropy change from unfolded to transition state for protein 2",
+      "value_or_range": "0.6-0.8 * \u0394S_protein2"
+    },
+    {
+      "name": "\u0394Cp_U2TS_protein2",
+      "description": "Heat capacity change from unfolded to transition state for protein 2",
+      "value_or_range": "0.6-0.8 * \u0394Cp_protein2"
+    },
+    {
+      "name": "m_U2TS_protein2",
+      "description": "Denaturant dependence from unfolded to transition state for protein 2",
+      "value_or_range": "0.6-0.8 * m_protein2"
+    },
+    {
+      "name": "D_F_protein2",
+      "description": "Pre-exponential factor for protein 2 folding rate",
+      "value_or_range": "1e6-1e8 s^-1"
+    },
+    {
+      "name": "\u0394E_a_protein2",
+      "description": "Activation energy for configurational diffusion for protein 2",
+      "value_or_range": "3-8 kcal/mol (to be tested for universality)"
+    },
+    {
+      "name": "\u0394G_target",
+      "description": "Target stability for constant \u0394G contours",
+      "value_or_range": "[-2, 0, 2, 4, 6] kcal/mol (multiple stability levels)"
     }
   ],
   "variables_to_vary": [
     {
       "name": "T",
-      "description": "Temperature at which folding rate is measured",
-      "range": "[278.15, 323.15]",
-      "units": "K (5\u00b0C to 50\u00b0C)"
+      "description": "Temperature",
+      "range": "[278, 338] K (5\u00b0C to 65\u00b0C)",
+      "units": "K"
     },
     {
-      "name": "den",
-      "description": "Denaturant concentration adjusted to maintain constant stability",
-      "range": "Computed dynamically to maintain DG(T, den) = DG_target",
-      "units": "M (molar)"
+      "name": "[den]",
+      "description": "Denaturant concentration (guanidine or urea)",
+      "range": "[0, 8] M",
+      "units": "M"
+    },
+    {
+      "name": "protein_id",
+      "description": "Identifier for different proteins with varying native state stabilities",
+      "range": "[1, 2, 3, 4, 5] representing proteins with different thermodynamic parameters",
+      "units": "dimensionless"
+    },
+    {
+      "name": "\u0394E_a",
+      "description": "Activation energy for configurational diffusion (hypothesis test parameter)",
+      "range": "[3, 4, 5, 6, 7, 8] kcal/mol",
+      "units": "kcal/mol"
     }
   ],
   "procedure_steps": [
-    "Step 1: Initialize all thermodynamic constants (R, T0, DH, DS, DCp, m, m_TS, D0, DEa, DG_target) with values from typical protein folding experiments or paper-specific values if available",
-    "Step 2: Create a temperature array T ranging from 278.15 K to 323.15 K with 20-30 evenly spaced points",
-    "Step 3: For each temperature T in the array, calculate the required denaturant concentration den that maintains constant stability using: den = (DH - T * DS + DCp * ((T - T0) - T * ln(T / T0)) - DG_target) / m",
-    "Step 4: For each temperature T, compute the free energy at constant stability: DG(T, den) = DG_target (by construction)",
-    "Step 5: Calculate the natural logarithm of the folding rate at each temperature using: ln(rate) = ln(D0) + DEa / (R * T) - (m_TS / m) * DG_target / (R * T)",
-    "Step 6: Compute 1/T for each temperature to create the x-axis for Arrhenius plot",
-    "Step 7: Perform linear regression on ln(rate) vs 1/T to extract the slope and intercept",
-    "Step 8: Calculate the effective activation energy from the slope: E_eff = -slope * R",
-    "Step 9: Compare the extracted activation energy with the theoretical prediction: E_theory = DEa + (m_TS / m) * DG_target",
-    "Step 10: Generate visualizations: (a) ln(rate) vs 1/T (Arrhenius plot) with linear fit, (b) denaturant concentration vs temperature showing the constant stability contour, (c) folding rate vs temperature on linear scale",
-    "Step 11: Perform sensitivity analysis by varying DG_target (e.g., -3, -5, -7 kcal/mol) and plotting multiple Arrhenius lines to show how stability affects the slope",
-    "Step 12: Optionally, compare with non-constant stability case by computing rates at fixed denaturant concentration to demonstrate non-Arrhenius behavior"
+    "Step 1: Initialize constants - Set R = 0.001987 kcal/(mol*K), T_0 = 298.15 K. Define thermodynamic parameters for 3-5 different proteins with varying native state stabilities (different \u0394H, \u0394S, \u0394Cp, m values). Each protein should have distinct stability at reference conditions but potentially share the same \u0394E_a value to test universality.",
+    "Step 2: For each protein, compute the native state stability \u0394G(T, [den]=0) at T_0 to verify they have different stabilities. Calculate \u0394G(T, [den]) across a grid of temperatures (278-338 K, 20 points) and denaturant concentrations (0-8 M, 30 points) using the Gibbs-Helmholtz equation with heat capacity correction.",
+    "Step 3: For each protein and each target stability level \u0394G_target (e.g., -2, 0, 2, 4, 6 kcal/mol), create constant stability contours by solving for [den](T) at each temperature such that \u0394G(T, [den](T)) = \u0394G_target. Use numerical root-finding (scipy.optimize.fsolve or brentq) to find [den] for each T.",
+    "Step 4: Calculate the transition state free energy \u0394G_TS(T, [den]) for each protein at each (T, [den]) point using the transition state thermodynamic parameters (\u0394H_U2TS, \u0394S_U2TS, \u0394Cp_U2TS, m_U2TS).",
+    "Step 5: Compute folding rates k(T, [den]) for each protein using the full kinetic equation. For stability-corrected analysis, evaluate k(T, [den](T)) along each constant \u0394G contour.",
+    "Step 6: Create stability-corrected Arrhenius plots by plotting ln(k) vs 1/T for each protein at each constant \u0394G_target level. Perform linear regression to extract slopes for each protein-stability combination.",
+    "Step 7: Test hypothesis - Compare slopes across proteins: (a) If \u0394E_a is universal, all proteins should yield similar slopes at the same \u0394G_target level (within statistical error). (b) Calculate the effective \u0394E_a from each slope using the relationship: slope \u2248 \u0394E_a/R - (m_TS/m)*\u0394G_target/R. (c) Perform statistical analysis (mean, standard deviation, coefficient of variation) of \u0394E_a values across proteins.",
+    "Step 8: Generate visualizations: (a) 2D contour plots of \u0394G(T, [den]) for each protein showing constant stability lines. (b) Stability-corrected Arrhenius plots (ln(k) vs 1/T) for each protein at multiple \u0394G_target values, overlaid on the same axes for comparison. (c) Bar plot or scatter plot showing extracted \u0394E_a values for each protein with error bars. (d) Heatmap showing slope values as a function of protein_id and \u0394G_target.",
+    "Step 9: Sensitivity analysis - Vary \u0394E_a systematically for each protein (e.g., protein 1 with \u0394E_a = 4 kcal/mol, protein 2 with \u0394E_a = 6 kcal/mol) to demonstrate what non-universal behavior would look like in the stability-corrected plots.",
+    "Step 10: Statistical validation - Perform ANOVA or t-tests to determine if differences in extracted \u0394E_a values across proteins are statistically significant. Calculate R\u00b2 values for linear fits to assess quality of Arrhenius behavior."
   ],
-  "expected_outcomes": "The simulation should reveal: (1) A linear relationship between ln(rate) and 1/T when protein stability is maintained constant through denaturant adjustment, confirming Arrhenius behavior. (2) The slope of the Arrhenius plot should yield an effective activation energy equal to DEa + (m_TS/m)*DG_target, demonstrating that the observed activation energy includes contributions from both configurational diffusion (DEa) and the stability-dependent barrier. (3) The denaturant concentration required to maintain constant stability should increase with temperature, reflecting the temperature dependence of protein stability. (4) Different constant stability contours (different DG_target values) should produce parallel Arrhenius lines with the same slope (same DEa) but different intercepts. (5) Comparison with fixed denaturant concentration should show curved (non-Arrhenius) behavior, highlighting the importance of stability correction. (6) The linearity of the Arrhenius plot validates the hypothesis that configurational diffusion has an Arrhenius temperature dependence and that protein folding kinetics exhibit Arrhenius behavior when corrected for stability effects."
+  "expected_outcomes": "If the hypothesis is correct (\u0394E_a is universal), the simulation should reveal: (1) Stability-corrected Arrhenius plots (ln(k) vs 1/T at constant \u0394G) for all proteins will be linear with similar slopes, regardless of their native state stabilities or specific thermodynamic parameters. (2) The extracted \u0394E_a values from the slopes will cluster around a single value (within ~10-15% variation) across all proteins tested. (3) The slopes may vary slightly with \u0394G_target due to the (m_TS/m)*\u0394G_target/R term, but this variation should be consistent across proteins. (4) Proteins with very different native stabilities (e.g., \u0394G at 25\u00b0C ranging from -10 to -2 kcal/mol) will still show convergent \u0394E_a values. (5) The universality will be evident when plotting all proteins' stability-corrected data on the same axes - the lines should be parallel or nearly parallel. If the hypothesis is incorrect, different proteins will show significantly different slopes, indicating that \u0394E_a depends on protein-specific features like sequence, topology, or structural complexity. The simulation will quantify this through statistical measures (coefficient of variation of \u0394E_a across proteins should be <15% for universal behavior, >30% for protein-dependent behavior)."
 }

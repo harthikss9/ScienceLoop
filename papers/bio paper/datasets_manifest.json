@@ -1,0 +1,5 @@
+{
+  "dataset_type": "none",
+  "datasets": {},
+  "reasoning": "This simulation involves protein folding kinetics using thermodynamic equations (Gibbs-Helmholtz, Arrhenius) with synthetic parameters. While it mentions 'protein', it does not require actual protein structures from PDB. Instead, it uses theoretical thermodynamic parameters (\u0394H, \u0394S, \u0394Cp, m values) for hypothetical proteins with varying stabilities. The simulation generates synthetic data by solving equations across temperature and denaturant concentration grids. No external datasets are needed."
+}

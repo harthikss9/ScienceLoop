@@ -1,0 +1,85 @@
+{
+  "nodes": [
+    "Star GHV-62024",
+    "Modified Wind Momentum Rate",
+    "Mass-Loss Rate",
+    "Wind Terminal Velocity",
+    "Stellar Radius",
+    "Exponent of the Wind Velocity Law",
+    "Parameter Q",
+    "Luminosity of the Star",
+    "Effective Temperature of the Star",
+    "Metallicity of the Star",
+    "Helium Abundance by Number",
+    "Nitrogen Abundance",
+    "Wind Momentum-Luminosity Relationship",
+    "Radiatively Driven Wind Theory",
+    "Emission Profile of He II 4686",
+    "Inner Wind Acceleration",
+    "Wind Properties",
+    "Stellar Evolution",
+    "Low-Metallicity Environments"
+  ],
+  "edges": [
+    {
+      "source": "Mass-Loss Rate",
+      "relation": "is interdependent with",
+      "target": "Exponent of the Wind Velocity Law"
+    },
+    {
+      "source": "Exponent of the Wind Velocity Law",
+      "relation": "is crucial for fitting",
+      "target": "Emission Profile of He II 4686"
+    },
+    {
+      "source": "Wind Terminal Velocity",
+      "relation": "is related through",
+      "target": "Parameter Q"
+    },
+    {
+      "source": "Parameter Q",
+      "relation": "is defined as",
+      "target": "Mass-Loss Rate divided by the product of Wind Terminal Velocity and Stellar Radius to the power of 1.5"
+    },
+    {
+      "source": "Star GHV-62024",
+      "relation": "follows",
+      "target": "Wind Momentum-Luminosity Relationship"
+    },
+    {
+      "source": "Wind Momentum-Luminosity Relationship",
+      "relation": "is dependent on",
+      "target": "Luminosity of the Star"
+    },
+    {
+      "source": "Wind Momentum-Luminosity Relationship",
+      "relation": "is dependent on",
+      "target": "Metallicity of the Star"
+    },
+    {
+      "source": "Exponent of the Wind Velocity Law",
+      "relation": "indicates",
+      "target": "Slower Acceleration in the Inner Wind"
+    },
+    {
+      "source": "Star GHV-62024",
+      "relation": "suggests applicability of",
+      "target": "Radiatively Driven Wind Theory"
+    },
+    {
+      "source": "Radiatively Driven Wind Theory",
+      "relation": "is applicable at",
+      "target": "Low-Metallicity Environments"
+    },
+    {
+      "source": "Wind Properties",
+      "relation": "are crucial for understanding",
+      "target": "Stellar Evolution"
+    },
+    {
+      "source": "Stellar Evolution",
+      "relation": "is studied in",
+      "target": "Low-Metallicity Environments"
+    }
+  ]
+}

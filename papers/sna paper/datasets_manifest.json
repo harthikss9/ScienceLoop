@@ -1,0 +1,11 @@
+{
+  "dataset_type": "graph",
+  "datasets": {
+    "barabasi_albert": "papers/sna paper/datasets/barabasi_albert_n100_m3.edgelist",
+    "watts_strogatz": "papers/sna paper/datasets/watts_strogatz_n100_k6_p0.30.edgelist",
+    "erdos_renyi": "papers/sna paper/datasets/erdos_renyi_n100_p0.01.edgelist",
+    "karate": "papers/sna paper/datasets/karate.edgelist",
+    "dolphins": "papers/sna paper/datasets/dolphins.edgelist"
+  },
+  "reasoning": "The simulation plan explicitly mentions network topologies (scale-free, small-world, random, real-world), uses network-specific terms (k-shell, Gamma(i) for neighbors, nodes, edges), and specifies graph generation parameters in Step 1 (Barab\u00e1si-Albert with m=3, Watts-Strogatz with k=6 and p=0.3, Erd\u0151s-R\u00e9nyi with p=0.05). The plan also mentions real-world networks if available. Network sizes are specified as [100, 500, 1000, 2000] nodes."
+}

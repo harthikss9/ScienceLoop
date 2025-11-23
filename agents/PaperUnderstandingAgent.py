@@ -185,8 +185,8 @@ Return ONLY valid JSON, no additional text."""
         raise Exception("OPENAI_API_KEY not found in environment variables")
     
     client = AsyncOpenAI(api_key=api_key)
-    # Try gpt-4o first (128k context), fallback to gpt-4-turbo (128k), then gpt-4 (8k)
-    model = os.getenv("OPENAI_MODEL", "gpt-4o")
+    # Use gpt-4-turbo for paper understanding
+    model = os.getenv("OPENAI_MODEL", "gpt-4-turbo")
     
     # Conservative max_tokens for response
     max_tokens = 3000

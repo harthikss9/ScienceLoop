@@ -1,0 +1,5 @@
+{
+  "dataset_type": "none",
+  "datasets": {},
+  "reasoning": "This simulation involves astrophysical stellar wind modeling with differential equations and physical constants. All variables (beta, Mdot, Q_target, stellar parameters) are synthetic and computed from physical equations. No external datasets (graph, ML, or biological structures) are required - only mathematical calculations based on stellar physics equations and constants."
+}

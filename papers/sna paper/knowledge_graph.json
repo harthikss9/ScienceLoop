@@ -1,100 +1,108 @@
 {
   "nodes": [
-    "K-shell decomposition",
-    "Node position",
-    "Neighborhood properties",
-    "Influential nodes",
-    "Node influence",
-    "Information entropy weighting",
-    "Multiattribute k-shell method",
-    "Real networks",
-    "Experimental simulations",
-    "Node influence ranking",
-    "Position index of node",
-    "Position attribute of node",
-    "Neighbor attribute of node",
-    "Entropy of attribute"
+    "Complex Networks",
+    "Influential Node Ranking Method",
+    "K-shell Decomposition",
+    "Iterative Information",
+    "Sigmoid Function",
+    "Node Position Index",
+    "Position Attribute",
+    "Neighbor Attribute",
+    "Information Entropy Weighting",
+    "Experimental Simulations",
+    "SIR Model",
+    "Centrality Measures",
+    "Node Influence Score",
+    "Node Propagation Capability",
+    "Influence Spread Capability",
+    "Network Core",
+    "Node's Closeness to Network Core"
   ],
   "edges": [
     {
-      "source": "K-shell decomposition",
-      "relation": "is refined by",
-      "target": "Node position"
+      "source": "Influential Node Ranking Method",
+      "relation": "is an improvement of",
+      "target": "K-shell Decomposition"
     },
     {
-      "source": "K-shell decomposition",
-      "relation": "is refined by",
-      "target": "Neighborhood properties"
-    },
-    {
-      "source": "Node position",
-      "relation": "contributes to",
-      "target": "Node influence"
-    },
-    {
-      "source": "Neighborhood properties",
-      "relation": "contributes to",
-      "target": "Node influence"
-    },
-    {
-      "source": "Node influence",
-      "relation": "is determined by",
-      "target": "Node position"
-    },
-    {
-      "source": "Node influence",
-      "relation": "is determined by",
-      "target": "Neighborhood properties"
-    },
-    {
-      "source": "Information entropy weighting",
-      "relation": "adjusts the weighting of",
-      "target": "Node position"
-    },
-    {
-      "source": "Information entropy weighting",
-      "relation": "adjusts the weighting of",
-      "target": "Neighborhood properties"
-    },
-    {
-      "source": "Multiattribute k-shell method",
-      "relation": "uses",
-      "target": "Information entropy weighting"
-    },
-    {
-      "source": "Multiattribute k-shell method",
-      "relation": "is validated through",
-      "target": "Experimental simulations"
-    },
-    {
-      "source": "Experimental simulations",
-      "relation": "are conducted on",
-      "target": "Real networks"
-    },
-    {
-      "source": "Node influence ranking",
+      "source": "K-shell Decomposition",
       "relation": "is enhanced by",
-      "target": "Multiattribute k-shell method"
+      "target": "Iterative Information"
     },
     {
-      "source": "Position index of node",
-      "relation": "contributes to",
-      "target": "Position attribute of node"
+      "source": "Iterative Information",
+      "relation": "is processed through",
+      "target": "Sigmoid Function"
     },
     {
-      "source": "Position attribute of node",
-      "relation": "is part of",
-      "target": "Node influence"
+      "source": "Sigmoid Function",
+      "relation": "determines",
+      "target": "Node Position Index"
     },
     {
-      "source": "Neighbor attribute of node",
-      "relation": "is part of",
-      "target": "Node influence"
+      "source": "Node Position Index",
+      "relation": "increases with",
+      "target": "Number of Iterations"
     },
     {
-      "source": "Entropy of attribute",
-      "relation": "is used for",
-      "target": "Information entropy weighting"
+      "source": "Node Position Index",
+      "relation": "indicates",
+      "target": "Node's Closeness to Network Core"
+    },
+    {
+      "source": "Position Attribute",
+      "relation": "combines",
+      "target": "Shell Value"
+    },
+    {
+      "source": "Position Attribute",
+      "relation": "combines",
+      "target": "Node Position Index"
+    },
+    {
+      "source": "Neighbor Attribute",
+      "relation": "aggregates",
+      "target": "Degrees of Second-order Neighbors"
+    },
+    {
+      "source": "Node Influence Score",
+      "relation": "is a weighted combination of",
+      "target": "Position Attribute"
+    },
+    {
+      "source": "Node Influence Score",
+      "relation": "is a weighted combination of",
+      "target": "Neighbor Attribute"
+    },
+    {
+      "source": "Node Influence Score",
+      "relation": "uses",
+      "target": "Information Entropy Weighting"
+    },
+    {
+      "source": "Node Propagation Capability",
+      "relation": "is evaluated using",
+      "target": "SIR Model"
+    },
+    {
+      "source": "Node Propagation Capability",
+      "relation": "is assessed through",
+      "target": "Centrality Measures"
+    },
+    {
+      "source": "Influential Node Ranking Method",
+      "relation": "is validated through",
+      "target": "Experimental Simulations"
+    },
+    {
+      "source": "Experimental Simulations",
+      "relation": "use",
+      "target": "SIR Model"
+    },
+    {
+      "source": "Experimental Simulations",
+      "relation": "use",
+      "target": "Centrality Measures"
     }
   ]
 }

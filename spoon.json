@@ -2,6 +2,23 @@
   "name": "ScienceLoop",
   "version": "1.0.0",
   "description": "AI4Science project for understanding scientific papers",
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem"],
+      "enabled": true
+    },
+    "process": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-process"],
+      "enabled": true
+    },
+    "shell": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-shell"],
+      "enabled": true
+    }
+  },
   "agents": {
     "PaperUnderstandingAgent": {
       "path": "./agents/PaperUnderstandingAgent.py",
@@ -76,6 +93,32 @@
           "type": "string",
           "required": true,
           "description": "Path to JSON file from KnowledgeGraphAgent (knowledge graph with nodes and edges)"
+        }
+      ]
+    },
+    "CodeGeneratorAgent": {
+      "path": "./agents/CodeGeneratorAgent.py",
+      "language": "python",
+      "description": "Converts a simulation plan JSON into a complete, runnable Python script using GPT-4o",
+      "arguments": [
+        {
+          "name": "plan",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from SimulationPlanAgent (simulation plan with equations, constants, variables, procedure, outcomes)"
+        }
+      ]
+    },
+    "DatasetAgent": {
+      "path": "./agents/DatasetAgent.py",
+      "language": "python",
+      "description": "Analyzes simulation plans and generates/downloads required datasets (graphs, ML data, bio structures) using Claude 4.5 Sonnet",
+      "arguments": [
+        {
+          "name": "plan",
+          "type": "string",
+          "required": true,
+          "description": "Path to JSON file from SimulationPlanAgent (simulation plan)"
         }
       ]
     }
