@@ -265,7 +265,32 @@ Your responsibilities:
    - ALWAYS verify data shapes: print("X shape:", X.shape, "y shape:", y.shape) before model training
    - If generating synthetic data, build feature matrix directly as list of lists, then convert to np.array
 
-7. COMMON MISTAKES TO AVOID:
+7. CRITICAL BIOINFORMATICS/PEPTIDE SEQUENCE HANDLING:
+   - If working with peptide/protein sequences (amino acid strings):
+     * Sequences are STRINGS of characters (e.g., "ACDEFG", "ILWITTESV")
+     * Each character represents an amino acid: A, C, D, E, F, G, H, I, K, L, M, N, P, Q, R, S, T, V, W, Y
+     * You CANNOT use characters directly as array indices - they must be mapped to integers first
+     * ALWAYS create an amino acid to index mapping dictionary:
+       AMINO_ACIDS = 'ACDEFGHIKLMNPQRSTVWY'  # Standard 20 amino acids
+       aa_to_idx = {{aa: idx for idx, aa in enumerate(AMINO_ACIDS)}}
+     * When accessing physicochemical property arrays:
+       * CORRECT: properties[property_idx, aa_to_idx[sequence[i]]]
+       * WRONG: properties[property_idx, sequence[i]]  # sequence[i] is a character, not an integer
+     * If sequence contains unknown characters, use .get() with default: aa_to_idx.get(seq[i], 0)
+   - For physicochemical property matrices:
+     * Properties array shape: (num_properties, num_amino_acids) = (50, 20) typically
+     * To select properties: select ROWS (axis 0), not columns (axis 1)
+     * CORRECT: selected_properties = properties[selected_indices, :]  # Select rows
+     * WRONG: selected_properties = properties[:, selected_indices]  # This selects amino acids, not properties
+   - For sklearn classification with sequences:
+     * Use predict_proba() or decision_function() for ROC AUC, NOT predict()
+     * CORRECT: clf = SVC(probability=True); y_proba = clf.predict_proba(X_test)[:, 1]; auc = roc_auc_score(y_test, y_proba)
+     * WRONG: y_pred = clf.predict(X_test); auc = roc_auc_score(y_test, y_pred)  # Binary predictions give poor AUC
+   - When filtering sequences by length:
+     * Use pandas string methods: filtered = df[df['sequence'].str.len() == M]
+     * Always check if filtered data is empty before proceeding
+
+8. COMMON MISTAKES TO AVOID:
    - DO NOT default to generating plots - most simulations output text/CSV
    - DO NOT import matplotlib unless plotting is explicitly mentioned in the plan
    - DO NOT return np.array(list_of_dicts) - sklearn cannot handle arrays of dictionaries
@@ -281,8 +306,11 @@ Your responsibilities:
    - CRITICAL: If plotting, ensure collection loop matches x-axis loop exactly
    - Example WRONG: for x_val in range(11): for y_val in range(5): results.append(compute()) then plt.plot(range(11), results)  # 55 values vs 11 x-values
    - Example CORRECT: for x_val in range(11): acc = compute(); results.append(acc) then plt.plot(range(11), results)  # 11 values vs 11 x-values
+   - DO NOT use amino acid characters directly as array indices - ALWAYS map to integers first
+   - DO NOT select columns when you need rows for property selection (properties[selected_indices, :] not properties[:, selected_indices])
+   - DO NOT use predict() for ROC AUC calculation - use predict_proba() or decision_function()
 
-8. VALIDATION AND TESTING:
+9. VALIDATION AND TESTING:
    - After generating data, verify shapes and types match sklearn requirements
    - Before model training, check: assert X.ndim == 2, "X must be 2D array"
    - Before model training, check: assert y.ndim == 1, "y must be 1D array"
@@ -294,8 +322,10 @@ Your responsibilities:
    - Verify all expected outputs are generated (files saved, text printed to stdout)
    - BEFORE PLOTTING (if plotting): Always add assert len(x_array) == len(y_array), "Dimension mismatch: x and y arrays must have same length"
    - If collecting results in nested loops, verify collection logic matches output requirements
+   - For peptide sequences: Verify amino acid mapping exists before using sequence characters as indices
+   - For property selection: Verify you're selecting rows (properties) not columns (amino acids)
 
-9. CRITICAL LOOP AND PLOTTING PATTERN:
+10. CRITICAL LOOP AND PLOTTING PATTERN:
    CORRECT PATTERN for plotting:
    ```python
    results = []
@@ -326,7 +356,7 @@ Your responsibilities:
    - Collect ONE aggregated value per outer loop iteration
    - Example: for x_val in x_range: all_results = []; for y_val in y_range: all_results.append(compute(x_val,y_val)); results.append(np.mean(all_results))
 
-10. EXAMPLE: CORRECT DATA GENERATION FOR SKLEARN:
+11. EXAMPLE: CORRECT DATA GENERATION FOR SKLEARN:
    ```python
    def generate_data(n_samples):
        X = []  # List of feature vectors
@@ -358,6 +388,37 @@ Your responsibilities:
        return np.array(data), labels  # WRONG! Creates array of dicts
    ```
 
+12. EXAMPLE: CORRECT PEPTIDE SEQUENCE HANDLING:
+   ```python
+   # Map amino acids to indices
+   AMINO_ACIDS = 'ACDEFGHIKLMNPQRSTVWY'
+   aa_to_idx = {{aa: idx for idx, aa in enumerate(AMINO_ACIDS)}}
+   
+   # Properties array: (num_properties, num_amino_acids) = (50, 20)
+   properties = np.random.rand(50, 20)
+   
+   # Select properties (rows), not amino acids (columns)
+   selected_indices = np.random.choice(50, num_properties, replace=False)
+   selected_properties = properties[selected_indices, :]  # Shape: (num_properties, 20)
+   
+   # Calculate features from sequence
+   def compute_feature(sequence, properties, aa_to_idx):
+       features = []
+       for prop in properties:  # Iterate over properties (rows)
+           value = 0
+           for i in range(len(sequence)):
+               aa_idx = aa_to_idx.get(sequence[i], 0)  # Map char to int
+               value += prop[aa_idx]  # Use integer index
+           features.append(value)
+       return features
+   
+   # For sklearn AUC calculation
+   clf = SVC(kernel='rbf', probability=True)
+   clf.fit(X_train, y_train)
+   y_proba = clf.predict_proba(X_test)[:, 1]  # Get probabilities
+   auc = roc_auc_score(y_test, y_proba)  # Use probabilities, not binary predictions
+   ```
+
 BEFORE RETURNING CODE, REVIEW IT FOR THESE CRITICAL ISSUES:
 1. ✅ VERIFY PLAN MATCHING: Check that your code implements ALL steps from procedure_steps:
    - Count how many steps are in procedure_steps
@@ -380,6 +441,9 @@ BEFORE RETURNING CODE, REVIEW IT FOR THESE CRITICAL ISSUES:
 7. Check plotting: If plotting, verify len(x_array) == len(y_array) before plt.plot()
 8. Verify outputs: Check that expected_outcomes mentions are addressed (e.g., if it says "correlation r > 0.7", compute and print correlation)
 9. Verify text output: Ensure print() statements output all key metrics, statistics, and results to stdout
+10. Verify peptide handling: If sequences are involved, check that amino acid mapping exists and characters are mapped to indices before array access
+11. Verify property selection: If selecting properties, ensure you're selecting rows (axis 0), not columns (axis 1)
+12. Verify AUC calculation: If using sklearn, ensure probability=True and using predict_proba() for ROC AUC
 
 Return ONLY valid JSON in this exact format:
 {{
